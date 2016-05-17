@@ -1,0 +1,190 @@
+/*reset*/
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,blockquote,th,td {margin: 0; padding: 0;}
+html, body { margin: 0; padding: 0; width:100%; height: 100%;}
+.print-page table { border-collapse: collapse; border-spacing: 0; width: 100%;}
+.print-page ul {list-style-type: none;}
+
+body.print-bg {
+    /*background: url(../images/secure.jpg) repeat  50% 0 transparent;*/
+    font: 13px/120% Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
+    position: relative;
+}
+/* --------- */
+/* 
+
+@media print {
+    body {background: url(../images/secure.jpg) repeat  50% 0 transparent; }
+    .print-buttons-container {display: none;}
+}
+ */
+
+.printer {
+    margin-right: 5px;
+}
+
+/* 
+.print-buttons-container {
+    position: fixed;
+    left: 0;
+    top: 0;
+    font-family: Verdana,Arial,sans-serif;
+}
+ */
+
+/*clearfix*/
+.clearfix:after { content: "."; display: block; clear: both; visibility: hidden; line-height: 0; height: 0; }
+.clearfix { display: block; }
+html[xmlns] .clearfix { display: block; }
+* html .clearfix { height: 1%; }
+
+.print-page {
+    width: 960px;
+    margin:0 auto;
+    position: relative;
+    padding: 10px;
+}
+
+.print-page h3 {
+    font-size: 16px;
+    font-weight: bold;
+    padding: 5px 0;
+}
+.print-page .sub_title {
+    font-size: 1.3em;
+    font-style: italic;
+    margin-bottom: 10px;
+    text-decoration: underline;
+}
+.print-page .bold {font-weight:bold;}
+.print-page .fl {float:left;}
+
+/*.print-page .sectionContainer b {display: none;}*/
+.print-page .sectionContainer h3 {}
+.print-page .sectionContainer table {border-collapse: collapse;}
+.print-page .sectionContainer table td {border:1px solid #000; padding:2px 10px 2px 10px; vertical-align: top;}
+.print-page .sectionContainer table th {border:1px solid #000; vertical-align: top;}
+.print-page .sectionContainer table td b {padding-right:10px}
+.print-page .field-name {padding-right:20px; }
+.print-page .field-value {font-size: 16px;}
+.print-page .field-value:not(.img-holder) {text-decoration: underline;}
+.print-page ul.select {border-top:1px solid #000; margin-top: 2px; padding :2px 0;}
+.print-page .galka {padding-left:10px;}
+.print-page .num-cell {text-align: center;}
+/*.print-page .kursTable, .print-page .ServiceTable {margin-bottom: 5px;}*/
+.print-page .ServiceTable td {text-align: center;}
+.print-page .totalRow td {font-weight: bold;}
+.print-page .last-section  {width:60%; margin:30px 0 30px 40%;}
+.print-page .last-section  td {width:50%; margin:30px 0 30px 60%; padding:0 10px}
+.print-page .sectionContainer .j-table td {border:none; padding:0;}
+.print-page .sectionContainer .j-table td p {width:300px;  word-wrap: break-word;}
+
+.print-page .sectionContainer:after {
+    display: none;
+}
+
+.print-page input {
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+.print-page .status_letter {
+    float: left;
+    margin-right: 5px;
+    border: solid 1px;
+    width: 16px;
+    height: 16px;
+    text-align: center;
+}
+
+/*.print-page .status_input {*/
+    /*float: left;*/
+/*}*/
+
+/*.print-page .status_label {*/
+    /*float: left;*/
+/*}*/
+
+.print-page .select li {
+    height: 20px;
+}
+.sector_title_big {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.print-page .sectionContainer > div {
+    border: 1px solid #000000;
+    border-top: none;
+}
+
+.print-page .sectionContainer > h3 {
+    border: 2px solid #000000;
+    border-top: none;
+    border-bottom: none;
+    text-align: center;
+}
+
+.print-page .sectionContainer.first_section > h3 {
+    border-top: 2px solid #000000;;
+}
+
+.print-page .seller_count {
+    position: absolute;
+    margin-top: -55px;
+    right: 0;
+}
+
+.print-page .customer_count {
+    position: absolute;
+
+    margin-top: -100px;
+    right: 0;
+}
+
+.print-page .seller_count .field-value, .print-page .customer_count .field-value {
+    display: block;
+}
+
+.print-page .no_border_table {
+    border: 0;
+}
+
+.print-page .sectionContainer .no_border_table td {
+    border: 0;
+    padding: 0;
+}
+
+.print-page .service_grid td > span,
+.print-page .totalRow td > span {
+    display: block;
+    /*max-width: 40px;*/
+    word-wrap: break-word;
+}
+
+.print-page .totalRow td {
+    word-wrap: break-word;
+}
+
+.print-page .ServiceTable th {
+    word-break: break-all;
+}
+
+.print-page .service_grid td,
+.print-page .totalRow td {
+    max-width: 40px;
+}
+
+.print-page .sectionContainer table.ServiceTable td {
+    padding: 2px;
+}
+
+.display_none {
+    display: none !important;
+}
+
+/*.print-page .sectionContainer .no_border_table td.first_td {*/
+    /*width: 170px;*/
+/*}*/
+

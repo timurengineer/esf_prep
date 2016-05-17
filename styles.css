@@ -1,0 +1,68 @@
+html, body{
+}
+
+body { 
+    padding-top: 50px;
+}
+
+#login_page {
+}
+
+#app_page {
+    display: none;
+    height: 100%;
+}
+
+.navbar {
+    margin-bottom: 0px;
+}
+
+#sidebar {
+    position: fixed;
+    top: 50px;
+    left: 0px;
+    bottom: 0px;
+    width: 200px;
+    padding: 15px;
+    overflow-y: scroll;
+    background-color: #F8F8F8;
+}
+
+#content_area {
+    margin-left: 200px;
+    margin-top: 50px;
+}
+
+#buttons {
+    position: fixed;
+    top: 50px;
+    left: 200px;
+    background-color: white;
+    padding: 7px;
+    width: 100%;
+    -webkit-box-shadow: 0 1px 2px -2px #000000;
+    -moz-box-shadow: 0 1px 2px -2px #000000;
+    box-shadow: 0 1px 2px -2px #000000;
+}
+
+#table_content {
+    padding-left: 7px;
+    padding-right: 7px;
+}
+
+.fileinput {
+    padding-top: 7px;
+    background-color: white;
+}
+
+#user_company {
+    float: right;
+}
+
+#logout_button {
+    float: right;
+}
+
+.number-cell {
+    text-align: right;
+}

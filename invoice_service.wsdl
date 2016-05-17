@@ -1,0 +1,1947 @@
+<?xml version='1.0' encoding='UTF-8'?><?xml-stylesheet type='text/xsl' href='wsdl-viewer.xsl'?><wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="namespace.esf" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" name="InvoiceService" targetNamespace="namespace.esf">
+  <wsdl:types>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:v1="namespace.v1" xmlns:tns="namespace.v1" xmlns:ns1="namespace.abstractInvoice" targetNamespace="namespace.v1" version="1.0">
+
+  <xs:import namespace="namespace.abstractInvoice"/>
+
+  <xs:element name="invoice" type="tns:InvoiceV1"/>
+
+  <xs:complexType name="InvoiceV1">
+    <xs:annotation>
+      <xs:documentation>ЭСФ</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="ns1:AbstractInvoice">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="addInf" type="xs:string">
+            <xs:annotation>
+              <xs:documentation>Дополнительная информация (I)</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="0" name="consignee" type="tns:Consignee">
+            <xs:annotation>
+              <xs:documentation>Реквизиты грузополучателя (D 24)</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="0" name="consignor" type="tns:Consignor">
+            <xs:annotation>
+              <xs:documentation>Реквизиты грузоотправителя (D 23)</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="0" name="customerParticipants">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element maxOccurs="unbounded" name="participant" type="tns:Participant">
+                  <xs:annotation>
+                    <xs:documentation>Получатель (УСД) (H)</xs:documentation>
+                  </xs:annotation>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="customers">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element maxOccurs="unbounded" name="customer" type="tns:Customer">
+                  <xs:annotation>
+                    <xs:documentation>Получатель (C)</xs:documentation>
+                  </xs:annotation>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element minOccurs="0" name="deliveryTerm" type="tns:DeliveryTerm">
+            <xs:annotation>
+              <xs:documentation>Условия поставки (E)</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="productSet" type="tns:ProductSet">
+            <xs:annotation>
+              <xs:documentation>Товары (работы, услуги) (G)</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="0" name="publicOffice" type="tns:PublicOffice">
+            <xs:annotation>
+              <xs:documentation>Реквизиты государственного учреждения (F)</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="0" name="sellerParticipants">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element maxOccurs="unbounded" name="participant" type="tns:Participant">
+                  <xs:annotation>
+                    <xs:documentation>Поставщик (УСД) (H)</xs:documentation>
+                  </xs:annotation>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="sellers">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element maxOccurs="unbounded" name="seller" type="tns:Seller">
+                  <xs:annotation>
+                    <xs:documentation>Поставщик (B)</xs:documentation>
+                  </xs:annotation>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="turnoverDate" type="xs:string">
+            <xs:annotation>
+              <xs:documentation>Дата совершения оборота (A 3)</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Consignee">
+    <xs:annotation>
+      <xs:documentation>Реквизиты грузополучателя (D 24)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="0" name="address" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Адрес (D 24.3)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="name" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Наименование (D 24.2)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="tin" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>ИИН/БИН (24.1)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Consignor">
+    <xs:annotation>
+      <xs:documentation>Реквизиты грузоотправителя (D 23)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="0" name="address" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Адрес (D 24.3)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="name" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Наименование (D 24.2)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="tin" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>ИИН/БИН (D 23.1)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Participant">
+    <xs:annotation>
+      <xs:documentation>УСД (H)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="0" name="countryCode" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Код страны получателя. Обязательно заполняется если установлен статус CustomerType.NONRESIDENT и .</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="productShares">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" name="share" type="tns:ProductShare">
+              <xs:annotation>
+                <xs:documentation>Информация по товарам (работам, услугам)</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element minOccurs="0" name="rnn" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>РНН реорганизованного лица</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="tin" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>ИИН/БИН участника совместной деятельности (H 18)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ProductShare">
+    <xs:annotation>
+      <xs:documentation>Информация по товарам (работам, услугам)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="0" name="additional" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Дополнительные данные (H 15)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="exciseAmount" type="xs:decimal">
+        <xs:annotation>
+          <xs:documentation>Акциз-Сумма (H 9)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ndsAmount" type="xs:decimal">
+        <xs:annotation>
+          <xs:documentation>НДС-Сумма (H 12)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="priceWithTax" type="xs:decimal">
+        <xs:annotation>
+          <xs:documentation>Стоимость ТРУ с учетом НДС (H 13)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="priceWithoutTax" type="xs:decimal">
+        <xs:annotation>
+          <xs:documentation>Стоимость ТРУ без учета НДС (H 7)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="productNumber" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>Номер продукта (товара, услуги) (G 1)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="quantity" type="xs:decimal">
+        <xs:annotation>
+          <xs:documentation>Кол-во (объем) (H 5)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="turnoverSize" type="xs:decimal">
+        <xs:annotation>
+          <xs:documentation>Размер оборота по реализации (H 10)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Customer">
+    <xs:annotation>
+      <xs:documentation>Получатель (C)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="0" name="address" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Адрес (C 19)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="countryCode" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Код страны получателя. Обязательно заполняется если установлен статус CustomerType.NONRESIDENT и .</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="name" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Наименование получателя (C 18)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="rnn" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>РНН реорганизованного лица. Может отсутствовать. (C 17.1)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="statuses">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" name="status" type="tns:CustomerType">
+              <xs:annotation>
+                <xs:documentation>Тип получателя</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element minOccurs="0" name="tin" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>ИИН/БИН. Может отсутствовать если установлен статус CustomerType.NONRESIDENT. (C 17)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="trailer" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Дополнительные сведения (C 21)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DeliveryTerm">
+    <xs:annotation>
+      <xs:documentation>Условия поставки (E)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="0" name="contractDate" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Дата договора(контракт) на поставку товаров (работ, услуг) (E 25.2)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="contractNum" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Номер договора(контракт) на поставку товаров (работ, услуг) (E 25.1)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="destination" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Пункт назначения поставляемых товаров (работ, услуг) (E 29)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="exerciseWay" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Способ отправления (E 27)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="term" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Условия оплаты по договору (E 26)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="warrant" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Номер доверенности на поставку товаров (работ, услуг) (E 28.1)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="warrantDate" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Дата доверенности на поставку товаров (работ, услуг) (E 28.2)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ProductSet">
+    <xs:annotation>
+      <xs:documentation>Товары (работы, услуги) (G)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="currencyCode" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Код валюты (G 13)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="currencyRate" type="xs:decimal">
+        <xs:annotation>
+          <xs:documentation>Курс валюты</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element maxOccurs="unbounded" name="product" type="tns:Product">
+        <xs:annotation>
+          <xs:documentation>Данные по ТРУ</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="totalExciseAmount" type="xs:decimal">
+        <xs:annotation>
+          <xs:documentation>Итоговая Акциз-Сумма (G 9)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="totalNdsAmount" type="xs:decimal">
+        <xs:annotation>
+          <xs:documentation>Итоговая НДС-Сумма (G 12)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="totalPriceWithTax" type="xs:decimal">
+        <xs:annotation>
+          <xs:documentation>Итоговая стоимость ТРУ с учетом НДС (G 13)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="totalPriceWithoutTax" type="xs:decimal">
+        <xs:annotation>
+          <xs:documentation>Итоговая стоимость ТРУ без учета НДС (G 7)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="totalTurnoverSize" type="xs:decimal">
+        <xs:annotation>
+          <xs:documentation>Итоговый размер оборота по реализации (G 10)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Product">
+    <xs:annotation>
+      <xs:documentation>Товар (работа, услуга)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="0" name="additional" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Дополнительные данные (G 17)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="applicationNumberInCustomsUnion" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Номер заявления в рамках ТС (G 16)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="description" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Наименование ТРУ (G 2)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="exciseAmount" type="xs:decimal">
+        <xs:annotation>
+          <xs:documentation>Акциз-Сумма (G 9)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="exciseRate" type="xs:decimal">
+        <xs:annotation>
+          <xs:documentation>Акциз-Ставка (G 8)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ndsAmount" type="xs:decimal">
+        <xs:annotation>
+          <xs:documentation>НДС-Сумма (G 12)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="ndsRate" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>НДС-Ставка (G 11)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="priceWithTax" type="xs:decimal">
+        <xs:annotation>
+          <xs:documentation>Стоимость ТРУ с учетом НДС (G 13)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="priceWithoutTax" type="xs:decimal">
+        <xs:annotation>
+          <xs:documentation>Стоимость ТРУ без учета НДС (G 7)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="quantity" type="xs:decimal">
+        <xs:annotation>
+          <xs:documentation>Кол-во (объем) (G 5)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="turnoverSize" type="xs:decimal">
+        <xs:annotation>
+          <xs:documentation>Размер оборота по реализации (G 10)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="unitCode" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Код товара (ТНВД) (G 3)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="unitNomenclature" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Ед.изм (G 4)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="unitPrice" type="xs:decimal">
+        <xs:annotation>
+          <xs:documentation>Цена (тариф) за единицу ТРУ без учета НДС (G 6)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PublicOffice">
+    <xs:annotation>
+      <xs:documentation>Реквизиты государственного учреждения (F)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element default="KKMFKZ2A" name="bik" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>БИК. Неизменяемое поле (F 33)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="iik" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Расчетный счет (F 30)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="payPurpose" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Назначение платежа (F 32)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="productCode" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Код товаров (работ, услуг) (F 31)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Seller">
+    <xs:annotation>
+      <xs:documentation>Поставщик (B)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="0" name="address" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Адрес (B 8)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="bank" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Банк (B 16)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="bik" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>БИК (B 15)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="certificateNum" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Номер cвидетельства НДС (B 9.2)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="certificateSeries" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Серия cвидетельства НДС (B 9.1)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="deliveryDocDate" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Дата документа, подтверждающего поставку товаров (работ, услуг) (B 11.2)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="deliveryDocNum" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Номер документа, подтверждающего поставку товаров (работ, услуг) (B 11.1)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="iik" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Расчетный счет (B 14)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="kbe" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>КБе (B 13)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="name" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Наименование поставщика (B 7)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="rnn" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>РНН реорганизованного лица (B 6.1)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="statuses">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" name="status" type="tns:SellerType">
+              <xs:annotation>
+                <xs:documentation>Тип поставщика</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="tin" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>ИИН/БИН (B 6)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="trailer" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Дополнительные сведения (B 12)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="CustomerType">
+    <xs:annotation>
+      <xs:documentation>Тип получателя (C 22)</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="COMMITTENT">
+        <xs:annotation>
+          <xs:documentation>Комитент</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="BROKER">
+        <xs:annotation>
+          <xs:documentation>Комиссионер</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="LESSEE">
+        <xs:annotation>
+          <xs:documentation>Лизингополучатель</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="JOINT_ACTIVITY_PARTICIPANT">
+        <xs:annotation>
+          <xs:documentation>Участник договора совместной деятельности</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="PUBLIC_OFFICE">
+        <xs:annotation>
+          <xs:documentation>Государственное учреждение</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="NONRESIDENT">
+        <xs:annotation>
+          <xs:documentation>Нерезидент</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="INDIVIDUAL">
+        <xs:annotation>
+          <xs:documentation>Физическое лицо</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="SellerType">
+    <xs:annotation>
+      <xs:documentation>Тип поставщика (B 10)</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="COMMITTENT">
+        <xs:annotation>
+          <xs:documentation>Комитент</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="BROKER">
+        <xs:annotation>
+          <xs:documentation>Комиссионер</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="FORWARDER">
+        <xs:annotation>
+          <xs:documentation>Экспедитор</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="LESSOR">
+        <xs:annotation>
+          <xs:documentation>Лизингодатель</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="JOINT_ACTIVITY_PARTICIPANT">
+        <xs:annotation>
+          <xs:documentation>Участник договора совместной деятельности</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="EXPORTER">
+        <xs:annotation>
+          <xs:documentation>Экспортёр</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="namespace.esf" xmlns:ns2="namespace.abstractInvoice" xmlns:ns1="namespace.v1" xmlns:esf="namespace.esf" attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="namespace.esf">
+  <xs:import namespace="namespace.v1"/>
+  <xs:import namespace="namespace.abstractInvoice"/>
+  <xs:complexType name="InvoiceByIdRequest">
+    <xs:complexContent>
+      <xs:extension base="tns:AbstractSessionAwareRequest">
+        <xs:sequence>
+          <xs:element name="idList">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element maxOccurs="unbounded" name="id" type="xs:long">
+                  <xs:annotation>
+                    <xs:documentation>Идентификатор ЭСФ в системе</xs:documentation>
+                  </xs:annotation>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType abstract="true" name="AbstractSessionAwareRequest">
+    <xs:sequence>
+      <xs:element name="sessionId" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Идентификатор сессии (см. SessionService)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="QueryInvoiceResponse">
+    <xs:sequence>
+      <xs:element name="lastBlock" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>Текущий блок является последним</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="currPage" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>Номер текущего блока результата</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="rsCount" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>Кол-во возвращаемых записей</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="invoiceInfoList">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="invoiceInfo" type="tns:InvoiceInfo">
+              <xs:annotation>
+                <xs:documentation>Информация о зарегистрированном ЭСФ включая бланк</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="InvoiceInfo">
+    <xs:annotation>
+      <xs:documentation>Информация о зарегистрированном ЭСФ включая бланк</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="0" name="cancelReason" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Причина аннулирования</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="certificate" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Сертификат для проверки подписи СФ, который содержит также информацию о пользователе — владельце сертификата, который и создал ЭСФ</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="deliveryDate" type="xs:dateTime">
+        <xs:annotation>
+          <xs:documentation>Дата доставки</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="inputDate" type="xs:dateTime">
+        <xs:annotation>
+          <xs:documentation>Дата поступления ЭСФ в систему</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" ref="ns1:invoice">
+        <xs:annotation>
+          <xs:documentation>ЭСФ</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="invoiceId" type="xs:long">
+        <xs:annotation>
+          <xs:documentation>Идентификатор ЭСФ в системе</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="invoiceStatus" type="ns2:InvoiceStatus">
+        <xs:annotation>
+          <xs:documentation>Cтатус ЭСФ в системе</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="lastUpdateDate" type="xs:dateTime">
+        <xs:annotation>
+          <xs:documentation>Дата обновления ЭСФ</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="oldSignature" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>Для проверки ЭЦП данной ЭСФ требуется использовать схему версии 1.0</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="registrationNumber" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Регистрационный номер ЭСФ</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="signatureValid" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>Статус ЭЦП</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SessionClosedFault">
+    <xs:annotation>
+      <xs:documentation>При попытке выполнить действие, когда сессия пользователя была закрыта вызовом соответствующего метода либо по таймауту</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="description" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="AccessDeniedFault">
+    <xs:annotation>
+      <xs:documentation>При отсутствии у пользователя прав на выполнение данной операции</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="description" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="BusinessFault">
+    <xs:annotation>
+      <xs:documentation>При возникновении ошибки в ПО</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="description" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="InvoiceByIdWithReasonRequest">
+    <xs:complexContent>
+      <xs:extension base="tns:AbstractSessionAwareRequest">
+        <xs:sequence>
+          <xs:element name="signature" type="xs:string">
+            <xs:annotation>
+              <xs:documentation>ЭЦП</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="x509Certificate" type="xs:string">
+            <xs:annotation>
+              <xs:documentation>PEM строковое представление (Base64 Encoded) X.509 сертификата, выданного удостоверяющим центром. Используется для проверки подписи СФ и полномочий данного пользователя</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="idWithReasonList">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element maxOccurs="unbounded" name="invoiceIdWithReason" type="tns:InvoiceIdWithReason">
+                  <xs:annotation>
+                    <xs:documentation>Идентификатор ЭСФ в системе вместе с причиной совершения операции</xs:documentation>
+                  </xs:annotation>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="InvoiceIdWithReason">
+    <xs:annotation>
+      <xs:documentation>Идентификатор ЭСФ в системе вместе с причиной совершения операции</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="id" type="xs:long">
+        <xs:annotation>
+          <xs:documentation>Идентификатор ЭСФ в системе</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="reason" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Причина совершения операции</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TryChangeStatusResponse">
+    <xs:sequence>
+      <xs:element name="resultList">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="changeStatusResult" type="tns:ChangeStatusResult">
+              <xs:annotation>
+                <xs:documentation>Результат операции изменения статуса</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ChangeStatusResult">
+    <xs:annotation>
+      <xs:documentation>Результат операции изменения статуса</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="invoiceSummary" type="tns:InvoiceSummary">
+        <xs:annotation>
+          <xs:documentation>Краткая информация о ЭСФ</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="isChanged" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>Был ли изменен статус ЭСФ в результате текущей операции</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="error" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Информация об ошибке, по причине которой операция не была произведена</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="InvoiceSummary">
+    <xs:annotation>
+      <xs:documentation>Краткая информация об ЭСФ</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="0" name="cancelReason" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Причина аннулирования</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="date" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Дата выписки ЭСФ</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="invoiceId" type="xs:long">
+        <xs:annotation>
+          <xs:documentation>Идентификатор ЭСФ</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="invoiceStatus" type="ns2:InvoiceStatus">
+        <xs:annotation>
+          <xs:documentation>Cтатус ЭСФ в системе</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="lastUpdateDate" type="xs:dateTime">
+        <xs:annotation>
+          <xs:documentation>Дата последнего обновления статуса ЭСФ</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="num" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Исходящий номер ЭСФ в бухгалтерии отправителя</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="registrationNumber" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Регистрационный номер ЭСФ</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="InvoiceSummaryResponse">
+    <xs:sequence>
+      <xs:element name="invoiceSummaryList">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="invoiceSummary" type="tns:InvoiceSummary">
+              <xs:annotation>
+                <xs:documentation>Краткая информация об ЭСФ</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="EnterpriseValidationRequest">
+    <xs:complexContent>
+      <xs:extension base="tns:AbstractSessionAwareRequest">
+        <xs:sequence>
+          <xs:element name="enterpriseKeyList">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element maxOccurs="unbounded" name="enterpriseKey" type="tns:EnterpriseKey">
+                  <xs:annotation>
+                    <xs:documentation>Базовая информация по налогоплательщику</xs:documentation>
+                  </xs:annotation>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="EnterpriseKey">
+    <xs:annotation>
+      <xs:documentation>Базовая информация по налогоплательщику</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="tin" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>ИИН/БИН</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="certificateSeries" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Cерия свидетельства плательщика НДС</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="certificateNum" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Номер свидетельства плательщика НДС</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="bik" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>БИК банка</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="iik" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Счёт (ИИК)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="EnterpriseValidationResponse">
+    <xs:sequence>
+      <xs:element name="resultList">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="enterpriseValidationResult" type="tns:EnterpriseValidationResult">
+              <xs:annotation>
+                <xs:documentation>Результат валидация налогоплательщика</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="EnterpriseValidationResult">
+    <xs:annotation>
+      <xs:documentation>Результат валидация налогоплательщика</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="tin" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>ИИН/БИН</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="resultType" type="tns:EnterpriseValidationResultType">
+        <xs:annotation>
+          <xs:documentation>Код ошибки валидации налогоплательщика</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="DeleteInvoiceByIdRequest">
+    <xs:complexContent>
+      <xs:extension base="tns:InvoiceByIdRequest">
+        <xs:sequence>
+          <xs:element name="signature" type="xs:string">
+            <xs:annotation>
+              <xs:documentation>ЭЦП</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="x509Certificate" type="xs:string">
+            <xs:annotation>
+              <xs:documentation>PEM строковое представление (Base64 Encoded) X.509 сертификата, выданного удостоверяющим центром. Используется для проверки подписи СФ и полномочий данного пользователя</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="DeleteInvoiceByIdResponse">
+    <xs:sequence>
+      <xs:element name="resultList">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="changeStatusResult" type="tns:DeleteResult">
+              <xs:annotation>
+                <xs:documentation>Результат выполнения операции по удалению ошибочных ЭСФ</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="DeleteResult">
+    <xs:annotation>
+      <xs:documentation>Результат выполнения операции по удалению ошибочных ЭСФ</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="invoiceId" type="xs:long">
+        <xs:annotation>
+          <xs:documentation>Идентификатор ЭСФ в системе</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="isDeleted" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>Флаг успешного удаления ЭСФ</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="QueryInvoiceRequest">
+    <xs:complexContent>
+      <xs:extension base="tns:AbstractSessionAwareRequest">
+        <xs:sequence>
+          <xs:element name="criteria" type="tns:QueryInvoiceCriteria">
+            <xs:annotation>
+              <xs:documentation>Объект содержащий критерии поиска ЭСФ</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="QueryInvoiceCriteria">
+    <xs:annotation>
+      <xs:documentation>Объект содержащий критерии поиска ЭСФ</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="direction" type="tns:InvoiceDirection">
+        <xs:annotation>
+          <xs:documentation>Признак, указывающий, являются ли запрашиваемые ЭСФ входящими или исходящими для запрашивающей стороны</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="contragentTin" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>ИИН/БИН контрагента</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="dateFrom" type="xs:dateTime">
+        <xs:annotation>
+          <xs:documentation>Дата выписки ЭСФ с которой выполняется поиск</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="dateTo" type="xs:dateTime">
+        <xs:annotation>
+          <xs:documentation>Дата выписки ЭСФ по которую выполняется поиск</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="invoiceStatusList">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" name="invoiceStatus" type="ns2:InvoiceStatus">
+              <xs:annotation>
+                <xs:documentation>Cтатус ЭСФ в системе</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element minOccurs="0" name="invoiceType" type="ns2:InvoiceType">
+        <xs:annotation>
+          <xs:documentation>Тип ЭСФ:&lt;br/>ORDINARY_INVOICE - обычный,&lt;br/>FIXED_INVOICE - исправленный,&lt;br/>ADDITIONAL_INVOICE - дополнительный</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="orderBy" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Поле сортировки</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="asc" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>Направление сортировки</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="pageNum" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>Номер страницы с результатами</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="InvoiceByKeyRequest">
+    <xs:complexContent>
+      <xs:extension base="tns:AbstractSessionAwareRequest">
+        <xs:sequence>
+          <xs:element name="invoiceKeyList">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element maxOccurs="unbounded" name="invoiceKey" type="tns:InvoiceKey">
+                  <xs:annotation>
+                    <xs:documentation>Объект содержащий дату и внутренний номер ЭСФ</xs:documentation>
+                  </xs:annotation>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="direction" type="tns:InvoiceDirection">
+            <xs:annotation>
+              <xs:documentation>Признак, указывающий, являются ли запрашиваемые ЭСФ входящими или исходящими для запрашивающей стороны</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="InvoiceKey">
+    <xs:annotation>
+      <xs:documentation>Объект содержащий дату и внутренний номер ЭСФ</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="date" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Дата выписки ЭСФ</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="num" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Номер ЭСФ в бухгалтерии поставщика</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="QueryInvoiceUpdateRequest">
+    <xs:complexContent>
+      <xs:extension base="tns:AbstractSessionAwareRequest">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="lastEventId" type="xs:long">
+            <xs:annotation>
+              <xs:documentation>Идентификатор события с которого следует возвращать результаты</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="clientId" type="xs:string">
+            <xs:annotation>
+              <xs:documentation>Идентификатор инсталляции клиента</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="direction" type="tns:InvoiceDirection">
+            <xs:annotation>
+              <xs:documentation>Признак, указывающий, являются ли запрашиваемые ЭСФ входящими или исходящими для запрашивающей стороны</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="0" name="limit" type="xs:int">
+            <xs:annotation>
+              <xs:documentation>Максимальное кол-во возвращаемых объектов</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="fullInfoOnStatusChange" type="xs:boolean">
+            <xs:annotation>
+              <xs:documentation>Возвращать полную информацию об ЭСФ при изменении статуса</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="QueryInvoiceUpdateResponse">
+    <xs:sequence>
+      <xs:element name="lastEventId" type="xs:long">
+        <xs:annotation>
+          <xs:documentation>Идентификатор события с которого возвращены результаты</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="lastBlock" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>Текущий блок является последним</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="invoiceInfoList">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="invoiceInfo" type="tns:InvoiceInfo">
+              <xs:annotation>
+                <xs:documentation>Информация о зарегистрированном ЭСФ включая бланк</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="EnterpriseValidationResultType">
+    <xs:annotation>
+      <xs:documentation>Код ошибки валидации налогоплательщика</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="SUCCESS">
+        <xs:annotation>
+          <xs:documentation>Успешно</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="TIN_ABSENT">
+        <xs:annotation>
+          <xs:documentation>ИИН/БИН отсутствует в справочнике</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="CERTIFICATE_SERIES_OR_CERTIFICATE_NUM_ABSENT">
+        <xs:annotation>
+          <xs:documentation>Серия свидетельства НДС или номер свидетельства НДС отсутствуют в справочнике</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="BIK_ABSENT">
+        <xs:annotation>
+          <xs:documentation>БИК отсутствует в справочнике</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="BANK_NOT_FOUND">
+        <xs:annotation>
+          <xs:documentation>Банк отсутствует в справочнике</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="IIK_ABSENT">
+        <xs:annotation>
+          <xs:documentation>ИИК отсутствует в справочнике</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="InvoiceDirection">
+    <xs:annotation>
+      <xs:documentation>Признак, указывающий, являются ли запрашиваемые ЭСФ входящими или исходящими для запрашивающей стороны</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="INBOUND">
+        <xs:annotation>
+          <xs:documentation>Входящие</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="OUTBOUND">
+        <xs:annotation>
+          <xs:documentation>Исходящие</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="sessionClosedException" nillable="true" type="tns:SessionClosedFault"/>
+  <xs:element name="accessDeniedException" nillable="true" type="tns:AccessDeniedFault"/>
+  <xs:element name="businessException" nillable="true" type="tns:BusinessFault"/>
+  <xs:element name="queryInvoiceByIdRequest" nillable="true" type="tns:InvoiceByIdRequest"/>
+  <xs:element name="queryInvoiceByIdResponse" nillable="true" type="tns:QueryInvoiceResponse"/>
+  <xs:element name="unrevokeInvoiceByIdRequest" nillable="true" type="tns:InvoiceByIdWithReasonRequest"/>
+  <xs:element name="unrevokeInvoiceByIdResponse" nillable="true" type="tns:TryChangeStatusResponse"/>
+  <xs:element name="confirmInvoiceByIdRequest" nillable="true" type="tns:InvoiceByIdRequest"/>
+  <xs:element name="confirmInvoiceByIdResponse" nillable="true" type="tns:InvoiceSummaryResponse"/>
+  <xs:element name="revokeInvoiceByIdRequest" nillable="true" type="tns:InvoiceByIdWithReasonRequest"/>
+  <xs:element name="revokeInvoiceByIdResponse" nillable="true" type="tns:TryChangeStatusResponse"/>
+  <xs:element name="declineInvoiceByIdRequest" nillable="true" type="tns:InvoiceByIdWithReasonRequest"/>
+  <xs:element name="declineInvoiceByIdResponse" nillable="true" type="tns:TryChangeStatusResponse"/>
+  <xs:element name="enterpriseValidationRequest" nillable="true" type="tns:EnterpriseValidationRequest"/>
+  <xs:element name="enterpriseValidationResponse" nillable="true" type="tns:EnterpriseValidationResponse"/>
+  <xs:element name="queryInvoiceSummaryByIdRequest" nillable="true" type="tns:InvoiceByIdRequest"/>
+  <xs:element name="queryInvoiceSummaryByIdResponse" nillable="true" type="tns:InvoiceSummaryResponse"/>
+  <xs:element name="deleteInvoiceByIdRequest" nillable="true" type="tns:DeleteInvoiceByIdRequest"/>
+  <xs:element name="deleteInvoiceByIdResponse" nillable="true" type="tns:DeleteInvoiceByIdResponse"/>
+  <xs:element name="queryInvoiceRequest" nillable="true" type="tns:QueryInvoiceRequest"/>
+  <xs:element name="queryInvoiceResponse" nillable="true" type="tns:QueryInvoiceResponse"/>
+  <xs:element name="queryInvoiceSummaryByKeyRequest" nillable="true" type="tns:InvoiceByKeyRequest"/>
+  <xs:element name="queryInvoiceSummaryByKeyResponse" nillable="true" type="tns:InvoiceSummaryResponse"/>
+  <xs:element name="queryInvoiceByKeyRequest" nillable="true" type="tns:InvoiceByKeyRequest"/>
+  <xs:element name="queryInvoiceByKeyResponse" nillable="true" type="tns:QueryInvoiceResponse"/>
+  <xs:element name="queryUpdatesRequest" nillable="true" type="tns:QueryInvoiceUpdateRequest"/>
+  <xs:element name="queryUpdatesResponse" nillable="true" type="tns:QueryInvoiceUpdateResponse"/>
+</xs:schema>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="namespace.abstractInvoice" xmlns:a="namespace.abstractInvoice" targetNamespace="namespace.abstractInvoice" version="1.0">
+
+  <xs:complexType abstract="true" name="AbstractInvoice">
+    <xs:annotation>
+      <xs:documentation>Базовая информация об ЭСФ для всех версий ЭСФ в системе</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="date" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Дата выписки ЭСФ (A 2)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="invoiceType" type="tns:InvoiceType">
+        <xs:annotation>
+          <xs:documentation>Тип ЭСФ</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="num" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Исходящий номер ЭСФ в бухгалтерии отправителя (A 1)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="operatorFullname" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>ФИО оператора отправившего ЭСФ </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="relatedInvoice" type="tns:RelatedInvoice">
+        <xs:annotation>
+          <xs:documentation>Служит для связки исправленного/дополнительного ЭСФ с основным</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="signature" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>ЭЦП (J)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="signatureType" type="tns:SignatureType">
+        <xs:annotation>
+          <xs:documentation>Тип ЭЦП (J)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="RelatedInvoice">
+    <xs:annotation>
+      <xs:documentation>Служит для связки исправленного/дополнительного ЭСФ с основным</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="date" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Дата выписки ЭСФ (A 4.1, A 5.1)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="num" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Исходящий номер ЭСФ в бухгалтерии отправителя (A 4.2, A 5.2)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="registrationNumber" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Регистрационный номер ЭСФ на которую ссылается данная ЭСФ</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="InvoiceType">
+    <xs:annotation>
+      <xs:documentation>Тип ЭСФ</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ORDINARY_INVOICE">
+        <xs:annotation>
+          <xs:documentation>Обычный</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="FIXED_INVOICE">
+        <xs:annotation>
+          <xs:documentation>Исправленный (A 4)</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="ADDITIONAL_INVOICE">
+        <xs:annotation>
+          <xs:documentation>Дополнительный (A 5)</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="SignatureType">
+    <xs:annotation>
+      <xs:documentation>Тип ЭЦП (J)</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="COMPANY">
+        <xs:annotation>
+          <xs:documentation>ЭЦП юридического лица (J 1)</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="OPERATOR">
+        <xs:annotation>
+          <xs:documentation>ЭЦП лица, уполномоченного подписывать счета-фактуры (J 2)</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="InvoiceStatus">
+    <xs:annotation>
+      <xs:documentation>Cтатус ЭСФ в системе</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="CREATED">
+        <xs:annotation>
+          <xs:documentation>Созданный</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="DELIVERED">
+        <xs:annotation>
+          <xs:documentation>Доставленный</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="CANCELED">
+        <xs:annotation>
+          <xs:documentation>Аннулированный</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="REVOKED">
+        <xs:annotation>
+          <xs:documentation>Отозванный</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="IMPORTED">
+        <xs:annotation>
+          <xs:documentation>Импортированный</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="DRAFT">
+        <xs:annotation>
+          <xs:documentation>Черновик</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="FAILED">
+        <xs:annotation>
+          <xs:documentation>Ошибочный</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="DELETED">
+        <xs:annotation>
+          <xs:documentation>Удаленный</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="DECLINED">
+        <xs:annotation>
+          <xs:documentation>Отклоненный</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message name="deleteInvoiceByIdResponse">
+    <wsdl:part element="tns:deleteInvoiceByIdResponse" name="deleteInvoiceByIdResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="queryInvoiceResponse">
+    <wsdl:part element="tns:queryInvoiceResponse" name="queryInvoiceResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="declineInvoiceByIdResponse">
+    <wsdl:part element="tns:declineInvoiceByIdResponse" name="declineInvoiceByIdResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="unrevokeInvoiceById">
+    <wsdl:part element="tns:unrevokeInvoiceByIdRequest" name="unrevokeInvoiceByIdRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="enterpriseValidationResponse">
+    <wsdl:part element="tns:enterpriseValidationResponse" name="enterpriseValidationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="confirmInvoiceById">
+    <wsdl:part element="tns:confirmInvoiceByIdRequest" name="confirmInvoiceByIdRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="revokeInvoiceById">
+    <wsdl:part element="tns:revokeInvoiceByIdRequest" name="revokeInvoiceByIdRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="queryInvoiceByKeyResponse">
+    <wsdl:part element="tns:queryInvoiceByKeyResponse" name="queryInvoiceByKeyResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="queryUpdatesResponse">
+    <wsdl:part element="tns:queryUpdatesResponse" name="queryUpdatesResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="queryInvoiceSummaryById">
+    <wsdl:part element="tns:queryInvoiceSummaryByIdRequest" name="queryInvoiceSummaryByIdRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="queryInvoiceByIdResponse">
+    <wsdl:part element="tns:queryInvoiceByIdResponse" name="queryInvoiceByIdResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="unrevokeInvoiceByIdResponse">
+    <wsdl:part element="tns:unrevokeInvoiceByIdResponse" name="unrevokeInvoiceByIdResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="queryInvoiceByKey">
+    <wsdl:part element="tns:queryInvoiceByKeyRequest" name="queryInvoiceByKeyRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="queryUpdates">
+    <wsdl:part element="tns:queryUpdatesRequest" name="queryUpdatesRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="revokeInvoiceByIdResponse">
+    <wsdl:part element="tns:revokeInvoiceByIdResponse" name="revokeInvoiceByIdResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="queryInvoiceById">
+    <wsdl:part element="tns:queryInvoiceByIdRequest" name="queryInvoiceByIdRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SessionClosedException">
+    <wsdl:part element="tns:sessionClosedException" name="SessionClosedException">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="queryInvoiceSummaryByKeyResponse">
+    <wsdl:part element="tns:queryInvoiceSummaryByKeyResponse" name="queryInvoiceSummaryByKeyResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="queryInvoiceSummaryByIdResponse">
+    <wsdl:part element="tns:queryInvoiceSummaryByIdResponse" name="queryInvoiceSummaryByIdResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="AccessDeniedException">
+    <wsdl:part element="tns:accessDeniedException" name="AccessDeniedException">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="declineInvoiceById">
+    <wsdl:part element="tns:declineInvoiceByIdRequest" name="declineInvoiceByIdRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="enterpriseValidation">
+    <wsdl:part element="tns:enterpriseValidationRequest" name="enterpriseValidationRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deleteInvoiceById">
+    <wsdl:part element="tns:deleteInvoiceByIdRequest" name="deleteInvoiceByIdRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="queryInvoice">
+    <wsdl:part element="tns:queryInvoiceRequest" name="queryInvoiceRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="queryInvoiceSummaryByKey">
+    <wsdl:part element="tns:queryInvoiceSummaryByKeyRequest" name="queryInvoiceSummaryByKeyRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="BusinessException">
+    <wsdl:part element="tns:businessException" name="BusinessException">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="confirmInvoiceByIdResponse">
+    <wsdl:part element="tns:confirmInvoiceByIdResponse" name="confirmInvoiceByIdResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="InvoiceService">
+<wsdl:documentation>Сервис работы с ЭСФ</wsdl:documentation>
+    <wsdl:operation name="queryInvoiceById">
+<wsdl:documentation>Вернуть список ЭСФ по идентификаторам</wsdl:documentation>
+      <wsdl:input message="tns:queryInvoiceById" name="queryInvoiceById">
+    </wsdl:input>
+      <wsdl:output message="tns:queryInvoiceByIdResponse" name="queryInvoiceByIdResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+    </wsdl:fault>
+      <wsdl:fault message="tns:BusinessException" name="BusinessException">
+    </wsdl:fault>
+      <wsdl:fault message="tns:SessionClosedException" name="SessionClosedException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="unrevokeInvoiceById">
+<wsdl:documentation>Перевести ЭСФ с указанными идентификаторами в статус - DELIVERED (Доставлено). Операция разрешена только для ЭСФ со статусом REVOKED</wsdl:documentation>
+      <wsdl:input message="tns:unrevokeInvoiceById" name="unrevokeInvoiceById">
+    </wsdl:input>
+      <wsdl:output message="tns:unrevokeInvoiceByIdResponse" name="unrevokeInvoiceByIdResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+    </wsdl:fault>
+      <wsdl:fault message="tns:BusinessException" name="BusinessException">
+    </wsdl:fault>
+      <wsdl:fault message="tns:SessionClosedException" name="SessionClosedException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="confirmInvoiceById">
+<wsdl:documentation>Выставить флаг DELIVERED (Получено получателем) по списку переданных id</wsdl:documentation>
+      <wsdl:input message="tns:confirmInvoiceById" name="confirmInvoiceById">
+    </wsdl:input>
+      <wsdl:output message="tns:confirmInvoiceByIdResponse" name="confirmInvoiceByIdResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:BusinessException" name="BusinessException">
+    </wsdl:fault>
+      <wsdl:fault message="tns:SessionClosedException" name="SessionClosedException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="revokeInvoiceById">
+<wsdl:documentation>Перевести ЭСФ с указанными идентификаторами в статус - REVOKED (Отозвано отправителем). Операция разрешена только для ЭСФ с типом ORDINARY_INVOICE</wsdl:documentation>
+      <wsdl:input message="tns:revokeInvoiceById" name="revokeInvoiceById">
+    </wsdl:input>
+      <wsdl:output message="tns:revokeInvoiceByIdResponse" name="revokeInvoiceByIdResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+    </wsdl:fault>
+      <wsdl:fault message="tns:BusinessException" name="BusinessException">
+    </wsdl:fault>
+      <wsdl:fault message="tns:SessionClosedException" name="SessionClosedException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="declineInvoiceById">
+<wsdl:documentation>Перевести ЭСФ с указанными идентификаторами в статус - DECLINED (Отклонено получателем). Операция разрешена только для ЭСФ с типом FIXED_INVOICE и ADDITIONAL_INVOICE</wsdl:documentation>
+      <wsdl:input message="tns:declineInvoiceById" name="declineInvoiceById">
+    </wsdl:input>
+      <wsdl:output message="tns:declineInvoiceByIdResponse" name="declineInvoiceByIdResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+    </wsdl:fault>
+      <wsdl:fault message="tns:BusinessException" name="BusinessException">
+    </wsdl:fault>
+      <wsdl:fault message="tns:SessionClosedException" name="SessionClosedException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="enterpriseValidation">
+<wsdl:documentation>Проверить регистрационные данные предприятия</wsdl:documentation>
+      <wsdl:input message="tns:enterpriseValidation" name="enterpriseValidation">
+    </wsdl:input>
+      <wsdl:output message="tns:enterpriseValidationResponse" name="enterpriseValidationResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:SessionClosedException" name="SessionClosedException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="queryInvoiceSummaryById">
+<wsdl:documentation>Получить список статусов ЭСФ по идентификаторам</wsdl:documentation>
+      <wsdl:input message="tns:queryInvoiceSummaryById" name="queryInvoiceSummaryById">
+    </wsdl:input>
+      <wsdl:output message="tns:queryInvoiceSummaryByIdResponse" name="queryInvoiceSummaryByIdResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+    </wsdl:fault>
+      <wsdl:fault message="tns:BusinessException" name="BusinessException">
+    </wsdl:fault>
+      <wsdl:fault message="tns:SessionClosedException" name="SessionClosedException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="deleteInvoiceById">
+<wsdl:documentation>Удалить указанную ЭСФ в статусе FAILED</wsdl:documentation>
+      <wsdl:input message="tns:deleteInvoiceById" name="deleteInvoiceById">
+    </wsdl:input>
+      <wsdl:output message="tns:deleteInvoiceByIdResponse" name="deleteInvoiceByIdResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+    </wsdl:fault>
+      <wsdl:fault message="tns:BusinessException" name="BusinessException">
+    </wsdl:fault>
+      <wsdl:fault message="tns:SessionClosedException" name="SessionClosedException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="queryInvoice">
+<wsdl:documentation>Вернуть список ЭСФ удовлетворяющих указанному критерию</wsdl:documentation>
+      <wsdl:input message="tns:queryInvoice" name="queryInvoice">
+    </wsdl:input>
+      <wsdl:output message="tns:queryInvoiceResponse" name="queryInvoiceResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+    </wsdl:fault>
+      <wsdl:fault message="tns:SessionClosedException" name="SessionClosedException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="queryInvoiceSummaryByKey">
+<wsdl:documentation>Получить список статусов ЭСФ по InvoiceKey</wsdl:documentation>
+      <wsdl:input message="tns:queryInvoiceSummaryByKey" name="queryInvoiceSummaryByKey">
+    </wsdl:input>
+      <wsdl:output message="tns:queryInvoiceSummaryByKeyResponse" name="queryInvoiceSummaryByKeyResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+    </wsdl:fault>
+      <wsdl:fault message="tns:BusinessException" name="BusinessException">
+    </wsdl:fault>
+      <wsdl:fault message="tns:SessionClosedException" name="SessionClosedException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="queryInvoiceByKey">
+<wsdl:documentation>Вернуть список ЭСФ по идентификаторам</wsdl:documentation>
+      <wsdl:input message="tns:queryInvoiceByKey" name="queryInvoiceByKey">
+    </wsdl:input>
+      <wsdl:output message="tns:queryInvoiceByKeyResponse" name="queryInvoiceByKeyResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+    </wsdl:fault>
+      <wsdl:fault message="tns:BusinessException" name="BusinessException">
+    </wsdl:fault>
+      <wsdl:fault message="tns:SessionClosedException" name="SessionClosedException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="queryUpdates">
+<wsdl:documentation>Получить список новых зарегистрированных или измененных в системе ЭСФ</wsdl:documentation>
+      <wsdl:input message="tns:queryUpdates" name="queryUpdates">
+    </wsdl:input>
+      <wsdl:output message="tns:queryUpdatesResponse" name="queryUpdatesResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:AccessDeniedException" name="AccessDeniedException">
+    </wsdl:fault>
+      <wsdl:fault message="tns:BusinessException" name="BusinessException">
+    </wsdl:fault>
+      <wsdl:fault message="tns:SessionClosedException" name="SessionClosedException">
+    </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="InvoiceServiceSoapBinding" type="tns:InvoiceService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="queryInvoiceById">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="queryInvoiceById">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="queryInvoiceByIdResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="AccessDeniedException">
+        <soap:fault name="AccessDeniedException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="SessionClosedException">
+        <soap:fault name="SessionClosedException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="unrevokeInvoiceById">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="unrevokeInvoiceById">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="unrevokeInvoiceByIdResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="AccessDeniedException">
+        <soap:fault name="AccessDeniedException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="SessionClosedException">
+        <soap:fault name="SessionClosedException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="revokeInvoiceById">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="revokeInvoiceById">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="revokeInvoiceByIdResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="AccessDeniedException">
+        <soap:fault name="AccessDeniedException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="SessionClosedException">
+        <soap:fault name="SessionClosedException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="confirmInvoiceById">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="confirmInvoiceById">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="confirmInvoiceByIdResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="SessionClosedException">
+        <soap:fault name="SessionClosedException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="declineInvoiceById">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="declineInvoiceById">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="declineInvoiceByIdResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="AccessDeniedException">
+        <soap:fault name="AccessDeniedException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="SessionClosedException">
+        <soap:fault name="SessionClosedException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="enterpriseValidation">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="enterpriseValidation">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="enterpriseValidationResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="SessionClosedException">
+        <soap:fault name="SessionClosedException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="queryInvoiceSummaryById">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="queryInvoiceSummaryById">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="queryInvoiceSummaryByIdResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="AccessDeniedException">
+        <soap:fault name="AccessDeniedException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="SessionClosedException">
+        <soap:fault name="SessionClosedException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="deleteInvoiceById">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="deleteInvoiceById">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="deleteInvoiceByIdResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="AccessDeniedException">
+        <soap:fault name="AccessDeniedException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="SessionClosedException">
+        <soap:fault name="SessionClosedException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="queryInvoice">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="queryInvoice">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="queryInvoiceResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="AccessDeniedException">
+        <soap:fault name="AccessDeniedException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="SessionClosedException">
+        <soap:fault name="SessionClosedException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="queryInvoiceSummaryByKey">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="queryInvoiceSummaryByKey">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="queryInvoiceSummaryByKeyResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="AccessDeniedException">
+        <soap:fault name="AccessDeniedException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="SessionClosedException">
+        <soap:fault name="SessionClosedException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="queryInvoiceByKey">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="queryInvoiceByKey">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="queryInvoiceByKeyResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="AccessDeniedException">
+        <soap:fault name="AccessDeniedException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="SessionClosedException">
+        <soap:fault name="SessionClosedException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="queryUpdates">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="queryUpdates">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="queryUpdatesResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="AccessDeniedException">
+        <soap:fault name="AccessDeniedException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="BusinessException">
+        <soap:fault name="BusinessException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="SessionClosedException">
+        <soap:fault name="SessionClosedException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="InvoiceService">
+    <wsdl:port binding="tns:InvoiceServiceSoapBinding" name="InvoiceServicePort">
+      <soap:address location="https://92.46.122.150:8443/esf-web/ws/InvoiceService"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

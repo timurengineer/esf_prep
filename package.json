@@ -1,0 +1,18 @@
+{
+  "name": "node-esf2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "archiver": "^1.0.0",
+    "async": "^2.0.0-rc.5",
+    "glob": "^7.0.3",
+    "phantom": "^2.1.2",
+    "soap": "^0.15.0"
+  }
+}

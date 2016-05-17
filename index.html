@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="styles.css" type="text/css">
+</head>
+<body>
+    <div id="app_page">
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container-fluid">
+                <a href="/" class="navbar-brand">ESF</a>
+                <button type="button" class="btn btn-primary navbar-btn" onclick="logOut()" id="logout_button">Log out</button>
+                <span class="navbar-text hidden-xs" id="user_company"></span>
+            </div>
+        </nav>
+        <div id="content_area">
+            <div id="sidebar">
+                <form>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="direction" id="optionsRadios1" value="INBOUND" checked>
+                            Inbound
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="direction" id="optionsRadios2" value="OUTBOUND">
+                            Outbound
+                        </label>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <label for="date_from">Date from</label>
+                        <input type="date" class="form-control" id="date_from" placeholder="Date from">
+                    </div>
+                    <div class="form-group">
+                        <label for="date_to">Date to</label>
+                        <input type="date" class="form-control" id="date_to" placeholder="Date to">
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="company_id" placeholder="Company ID">
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <label for="invoice_type" class="control-label">Type</label>
+                        <select class="form-control" id="invoice_type">
+                            <option value="">Any</option>
+                            <option value="ORDINARY_INVOICE">Ordinary</option>
+                            <option value="ADDITIONAL_INVOICE">Additional</option>
+                            <option value="FIXED_INVOICE">Fixed</option>
+                        </select>
+                    </div>
+                    <hr>
+                    <label class="control-label">Status</label>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="invoice_status" value="CREATED" checked>
+                            Created
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="invoice_status" value="DELIVERED" checked>
+                            Delivered
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="invoice_status" value="CANCELED" checked>
+                            Cancelled
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="invoice_status" value="REVOKED" checked>
+                            Revoked
+                        </label>
+                    </div>
+                </form>
+                <button type="button" class="btn btn-primary" id="search_button" onclick="queryInvoice()">Search</button>
+            </div>
+            <div id="content">
+                <div id="buttons">
+                    <button type="button" class="btn btn-primary" id="pdf_button" onclick="getPdf()" disabled>PDF</button>
+                    <span id="messages"></span>
+                </div>
+                
+                <div id="table_content"></div>
+            </div>
+        </div>
+    </div>
+    <div class="container col-md-6 col-md-offset-3" id="login_page">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h1 class="text-center">Login</h1>
+            </div>
+            <div class="panel-body">
+                <div class="alert alert-danger" style="display: none;" role="alert" id="errorbox"></div>
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label for="certificate" class="col-sm-2 control-label">Certificate</label>
+                        <div class="col-sm-10">
+                            <input type="file" id="certificate" accept=".pem,.cer" class="fileinput">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="username" class="col-sm-2 control-label">Username</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="username" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password" class="col-sm-2 control-label">Password</label>
+                        <div class="col-sm-10">
+                            <input type="password" class="form-control" id="password" disabled onKeyUp="passKeyPressed(event)">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="company" class="col-sm-2 control-label">Company</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" id="company" disabled>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="button" class="btn btn-primary" id="login_button" onclick="logIn()" disabled>Log in</button>
+                            <span id="loading" style="display: none;">Loading... Please wait</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <span>Download test certificates: </span> 
+        <a href="/seller.cer" download>Seller</a>
+        <span>|</span>
+        <a href="/customer.cer" download>Customer</a>
+        <p>Password: TestPass123</p>
+    </div>
+    
+    <script type="text/javascript" src="esftable.js"></script>
+    <script type="text/javascript" src="app.js"></script>
+</body>
+</html>
