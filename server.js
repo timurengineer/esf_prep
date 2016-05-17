@@ -198,7 +198,6 @@ function downloadPdf(orderId, response) {
 
 var server = http.createServer(function(request, response){
     
-    console.log(request.headers);
 	if (request.method === 'GET'){
         var requestUrl = url.parse(request.url, true);
         //console.log(url.parse(request.url, true));
