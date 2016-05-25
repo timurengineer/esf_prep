@@ -45,6 +45,11 @@ var sessionService = function(operation, formData, response){
                     };
                     response.end(JSON.stringify(err_response));
                 } else {
+                    invoiceResponse[result.sessionId] = {}
+                    setTimeout(function(){
+                        delete invoiceResponse[result.sessionId];
+                        console.log('Session deleted ', result.sessionId);
+                    }, 30*60*1000);
                     result.status = 'success';
                     response.end(JSON.stringify(result));
                 }
@@ -57,20 +62,23 @@ var invoiceService = function(operation, formData, response){
     soap.createClient(invoice_service_wsdl, wsdlOptions, function(err, client) {
         if (err) throw err;
         if (operation === 'queryInvoice'){
-            client.InvoiceService.InvoiceServicePort.queryInvoice(formData.body, function(err, result){
-                if (err) {
-                    var err_response = {
-                        message: err.message,
-                        status: 'error'
-                    };
-                    response.end(JSON.stringify(err_response));
-                } else {
-                    invoiceResponse = result;
-                    console.log(invoiceResponse);
-                    result.status = 'success';
-                    response.end(JSON.stringify(result));
-                }
-            },{rejectUnauthorized: false});    
+            if (invoiceResponse[formData.body.sessionId]){
+                client.InvoiceService.InvoiceServicePort.queryInvoice(formData.body, function(err, result){
+                    if (err) {
+                        var err_response = {
+                            message: err.message,
+                            status: 'error'
+                        };
+                        response.end(JSON.stringify(err_response));
+                    } else {
+                        invoiceResponse[formData.body.sessionId] = result;
+                        result.status = 'success';
+                        response.end(JSON.stringify(result));
+                    }
+                },{rejectUnauthorized: false});
+            } else {
+                response.end('Error: no session');
+            }
         }
     });
 };
@@ -131,32 +139,36 @@ var getPdf = function(formData, response) {
         return cb('Exception rendering pdf:' + e.toString());
       }
     };
-
-    if (invoiceResponse.invoiceInfoList.invoiceInfo != null) 
-        createPhantomSession(function(err,s){
-            async.forEachLimit(formData, 50, function(formDataInvoiceId, callback){
-                var length = invoiceResponse.invoiceInfoList.invoiceInfo.length;
-                var invoiceInfo = {};
-                for (var i=0; i < length; i++) {
-                    if (invoiceResponse.invoiceInfoList.invoiceInfo[i].invoiceId === formDataInvoiceId) {
-                        invoiceInfo = invoiceResponse.invoiceInfoList.invoiceInfo[i];
-                        break;
+    
+    if (invoiceResponse[formData.sessionId]){
+        if (invoiceResponse[formData.sessionId].invoiceInfoList.invoiceInfo != null) 
+            createPhantomSession(function(err,s){
+                async.forEachLimit(formData.invoiceIds, 50, function(formDataInvoiceId, callback){
+                    var length = invoiceResponse[formData.sessionId].invoiceInfoList.invoiceInfo.length;
+                    var invoiceInfo = {};
+                    for (var i=0; i < length; i++) {
+                        if (invoiceResponse[formData.sessionId].invoiceInfoList.invoiceInfo[i].invoiceId === formDataInvoiceId) {
+                            invoiceInfo = invoiceResponse[formData.sessionId].invoiceInfoList.invoiceInfo[i];
+                            break;
+                        }
                     }
-                }
-                var filename = './print/' + orderId + '/' + invoiceInfo.registrationNumber + '.pdf';
-                renderPdf(s, objToHtml(invoiceInfo), filename, callback, function(err, f){
-                    if (err) console.log(err);
-                    console.log(f);
+                    var filename = './print/' + orderId + '/' + invoiceInfo.registrationNumber + '.pdf';
+                    renderPdf(s, objToHtml(invoiceInfo), filename, callback, function(err, f){
+                        if (err) console.log(err);
+                        console.log(f);
+                    });
+                }, function(err){
+                    if (err) throw err;
+                    var res = { 
+                        pdfPrepared: true,
+                        orderId: orderId
+                    };
+                    response.end(JSON.stringify(res));
                 });
-            }, function(err){
-                if (err) throw err;
-                var res = { 
-                    pdfPrepared: true,
-                    orderId: orderId
-                };
-                response.end(JSON.stringify(res));
             });
-        });
+    } else {
+        response.end('Error: no session');
+    }
 
 };
 
@@ -197,36 +209,35 @@ function downloadPdf(orderId, response) {
 }
 
 var server = http.createServer(function(request, response){
-    
+    console.log(request.headers.cookie);
 	if (request.method === 'GET'){
         var requestUrl = url.parse(request.url, true);
-        //console.log(url.parse(request.url, true));
         switch (requestUrl.pathname) {
             case "/app.js" :
                 response.writeHead(200, {"Content-Type": "text/javascript"});
-                fs.createReadStream("./app.js").pipe(response);
+                fs.createReadStream("./public/app.js").pipe(response);
                 break;
             case "/esftable.js" :
                 response.writeHead(200, {"Content-Type": "text/javascript"});
-                fs.createReadStream("./esftable.js").pipe(response);
+                fs.createReadStream("./public/esftable.js").pipe(response);
                 break;
             case "/styles.css" :
                 response.writeHead(200, {"Content-Type": "text/css"});
-                fs.createReadStream("./styles.css").pipe(response);
+                fs.createReadStream("./public/styles.css").pipe(response);
                 break;
             case "/customer.cer" :
                 response.writeHead(200,{
-                    "Content-Type": "application/octet-stream",
+                    "Content-Type": "text/plain",
                     "Content-disposition": "attachment; filename=customer.cer"
                 });
-                fs.createReadStream("./customer.cer").pipe(response);
+                fs.createReadStream("./public/customer.cer").pipe(response);
                 break;
             case "/seller.cer" :
                 response.writeHead(200,{
-                    "Content-Type": "application/octet-stream",
+                    "Content-Type": "text/plain",
                     "Content-disposition": "attachment; filename=seller.cer"
                 });
-                fs.createReadStream("./seller.cer").pipe(response);
+                fs.createReadStream("./public/seller.cer").pipe(response);
                 break;
             case "/downloadpdf":
                 if (requestUrl.search){
@@ -235,7 +246,7 @@ var server = http.createServer(function(request, response){
                 break;
             default :    
                 response.writeHead(200,{"Content-Type": "text/html"});
-                fs.createReadStream("./index.html").pipe(response);
+                fs.createReadStream("./public/index.html").pipe(response);
         }
     } else if (request.method === 'POST'){
         var requestBody = '';
