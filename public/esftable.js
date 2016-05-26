@@ -103,16 +103,16 @@
                 return invL.registrationNumber;
             }
         },
-        companyId: {
-            header: 'Company ID',
+        sellerId: {
+            header: 'Seller ID',
             getValue: function (invL){
-                return (direction === 'INBOUND' ? invL.invoice.sellers.seller[0].tin : invL.invoice.customers.customer[0].tin )
+                return invL.invoice.sellers.seller[0].tin;
             }
         },
-        companyName: {
-            header: 'Company name',
+        sellerName: {
+            header: 'Seller name',
             getValue: function (invL){
-                return (direction === 'INBOUND' ? invL.invoice.sellers.seller[0].name : invL.invoice.customers.customer[0].name )
+                return invL.invoice.sellers.seller[0].name;
             }
         },
         type: {

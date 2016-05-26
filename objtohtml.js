@@ -1,3 +1,5 @@
+"use strict";
+
 module.exports = function esfObjectToHtml(invoiceInfo){
     var additional_invoice_checkmark = '';
     var additional_invoice_num = '';

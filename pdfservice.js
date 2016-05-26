@@ -1,3 +1,5 @@
+"use strict";
+
 var fs = require('fs');
 var glob = require('glob');
 var objToHtml = require('./objtohtml');
@@ -5,6 +7,7 @@ var phantom = require('phantom');
 var async = require('async');
 var archiver = require('archiver');
 
+//get a list of invoiceIds from user, create and save PDFs to print folder, return orderId to user
 module.exports.preparePdf = function(invoiceResponse, formData, response) {
 
     function getRandomInt(min, max) {
@@ -94,7 +97,8 @@ module.exports.preparePdf = function(invoiceResponse, formData, response) {
 
 };
 
- module.exports.downloadPdf = function(orderId, response) {
+//get orderId from user and return PDFs in a zip file
+module.exports.downloadPdf = function(orderId, response) {
     response.writeHead(200,{
         "Content-Type": "application/zip",
         "Content-disposition": "attachment; filename=" + orderId + ".zip"

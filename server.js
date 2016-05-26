@@ -1,3 +1,5 @@
+"use strict";
+
 var http = require('http');
 var fs = require('fs');
 var soap = require('soap');
@@ -80,6 +82,7 @@ var invoiceService = function(operation, formData, response){
     });
 };
 
+//handle client requests
 var server = http.createServer(function(request, response){
 	if (request.method === 'GET'){
         var requestUrl = url.parse(request.url, true);
@@ -110,7 +113,7 @@ var server = http.createServer(function(request, response){
                 });
                 fs.createReadStream("./public/seller.cer").pipe(response);
                 break;
-            case "/downloadpdf":
+            case "/api/downloadpdf":
                 if (requestUrl.search){
                     pdfService.downloadPdf(requestUrl.query.orderid, response);
                 }
@@ -140,7 +143,7 @@ var server = http.createServer(function(request, response){
                 case '/api/invoiceservice/queryinvoice':
                     invoiceService('queryInvoice', formData, response);
                     break;
-                case '/api/getpdf':
+                case '/api/preparepdf':
                     pdfService.preparePdf(invoiceResponse, formData, response);
                     break;
             }

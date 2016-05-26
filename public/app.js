@@ -6,9 +6,15 @@ var usernameInput = document.getElementById('username');
 var passwordInput = document.getElementById('password');
 var companyInput = document.getElementById('company');
 var loginButton = document.getElementById('login_button');
-var getUserResponse;
-var queryInvoiceResponse;
-var direction;
+
+(function() {
+    var sessionId = getCookie('sessionId');
+    if (sessionId) {
+        document.getElementById('user_company').textContent = getCookie('userCompany');
+        document.getElementById('login_page').style.display = 'none';
+        document.getElementById('app_page').style.display = 'block';
+    }
+})();
 
 function getCookie(cname) {
     var name = cname + "=";
@@ -31,15 +37,6 @@ function setCookie(cname, cvalue, exmins) {
     var expires = "expires="+ d.toUTCString();
     document.cookie = cname + "=" + cvalue + "; " + expires;
 }
-
-(function() {
-    var sessionId = getCookie('sessionId');
-    if (sessionId) {
-        document.getElementById('user_company').textContent = getCookie('userCompany');
-        document.getElementById('login_page').style.display = 'none';
-        document.getElementById('app_page').style.display = 'block';
-    }
-})();
 
 reader.onload = function(e) {
     var certFileContent = reader.result;
@@ -74,7 +71,8 @@ document.getElementById("certificate").addEventListener('change', function(evt){
     if (certFile) reader.readAsText(certFile);
 }, false);
 
-function insertCompanyInfo() {
+//populate company select input with values
+function insertCompanyInfo(getUserResponse) {
     for (var i=0; i < getUserResponse.user.enterpriseEntries.length; i++) {
         var opt = document.createElement('option');
         opt.value = getUserResponse.user.enterpriseEntries[i].tin;
@@ -92,6 +90,99 @@ function insertCompanyInfo() {
     }
 }
 
+function ajaxCall(url, params, onload) {
+    var request = new XMLHttpRequest();
+    request.onload = function () {
+        if (request.status == 200) {
+            var response = JSON.parse(request.responseText);
+            onload(null, response);
+        } else {
+            onload(request);
+        }
+    };
+    request.onerror = function(){
+        errorBox.textContent = "Status: " + request.status + ". Response text: " + request.responseText;
+        errorBox.style.display = 'block';  
+    };
+    request.open("POST", url, true);
+    request.setRequestHeader("Content-type", "text/plain");
+    request.send(JSON.stringify(params));
+}
+
+//get user's company info after entering password
+function passKeyPressed(evt){
+    if (evt.keyCode === 13){
+        var params = {
+            security:{
+                username: user.id,
+                password: passwordInput.value
+            },
+            body: {
+                tin: user.id,
+                x509Certificate: user.certBase64   
+            }
+        };
+        passwordInput.disabled = true;
+        document.getElementById('loading').style.display = 'inline';
+        
+        var onload = function (err, response) {
+            document.getElementById('loading').style.display = 'none';
+            if (err) {
+                passwordInput.disabled = false;
+                errorBox.textContent = "Status: " + err.status + ". Response text: " + err.responseText;
+                errorBox.style.display = 'block';
+            } else {
+                if (response.status === "success"){
+                    errorBox.style.display = 'none';
+                    if (response.user.enterpriseEntries) {
+                        insertCompanyInfo(response);
+                    }
+                    companyInput.disabled = false;
+                    loginButton.disabled = false;
+                } else if (response.status === "error") {
+                    passwordInput.disabled = false;
+                    errorBox.textContent = response.message;
+                    errorBox.style.display = 'block';
+                }
+            }
+        }
+        ajaxCall('api/sessionservice/getuser', params, onload);
+    }
+}
+
+function logIn(){
+    var params = {
+        security:{
+            username: user.id,
+            password: passwordInput.value
+        },
+        body: {
+            tin: companyInput.value,
+            x509Certificate: user.certBase64
+        }
+    };
+    
+    var onload = function(err, response) {
+        if (err) {
+            errorBox.textContent = "Status: " + request.status + ". Response text: " + request.responseText;
+            errorBox.style.display = 'block';
+        } else {
+            if (response.status === "success"){
+                errorBox.style.display = 'none';
+                document.getElementById('login_page').style.display = 'none';
+                document.getElementById('app_page').style.display = 'block';
+                document.getElementById('user_company').textContent = companyInput.options[companyInput.selectedIndex].innerHTML;
+                setCookie('sessionId', response.sessionId, 30);
+                setCookie('userCompany', companyInput.options[companyInput.selectedIndex].innerHTML, 30);
+            } else if (response.status === "error") {
+                errorBox.textContent = response.message;
+                errorBox.style.display = 'block';
+            }
+        }
+    }
+    ajaxCall('api/sessionservice/createsession', params, onload);
+}
+
 function queryInvoice() {
     if (getCookie('sessionId')) {
         var params = {
@@ -102,17 +193,14 @@ function queryInvoice() {
                 }
             }
         };
-        //set direction parameter
         var directions = document.getElementsByName('direction');
         var length = directions.length;
         for (var i = 0; i < length; i++) {
             if (directions[i].checked) {
-                direction = directions[i].value;
                 params.body.criteria.direction = directions[i].value;
                 break;
             }
         }
-        //set other parameters here
         var contragentTin = document.getElementById('company_id').value;
         if (contragentTin) params.body.criteria.contragentTin = contragentTin;
         var dateFrom = document.getElementById('date_from').value;
@@ -132,134 +220,47 @@ function queryInvoice() {
                 invoiceStatusArray.push(invoiceStatusCheckboxes[i].value);
             }
         }
-        params.body.criteria.invoiceStatusList ={
+        params.body.criteria.invoiceStatusList = {
             invoiceStatus: invoiceStatusArray
         }
         var invoiceType = document.getElementById('invoice_type').value;
         if (invoiceType) params.body.criteria.invoiceType = invoiceType;
         params.body.criteria.asc = false;
-        var request = new XMLHttpRequest();
-        request.onload = function() {
+        
+        var onload = function(err, response) {
             document.getElementById('messages').textContent = "";
-            if (request.status == 200) {
-                queryInvoiceResponse = JSON.parse(request.responseText);
-                if (queryInvoiceResponse.status === "success"){
+            var tableContent = document.getElementById('table_content');
+            if (err) {
+                tableContent.textContent = "Status: " + err.status + ". Response text: " + err.responseText;
+            } else {
+                if (response.status === "success"){
                     errorBox.style.display = 'none';
-                    if (queryInvoiceResponse.invoiceInfoList) {
-                        var invoiceTable = EsfTable(queryInvoiceResponse.invoiceInfoList.invoiceInfo);
-                        document.getElementById('table_content').appendChild(invoiceTable.getTable([
+                    if (response.invoiceInfoList) {
+                        var invoiceTable = EsfTable(response.invoiceInfoList.invoiceInfo);
+                        tableContent.appendChild(invoiceTable.getTable([
                             'regNumber',
-                            'companyId',
-                            'companyName',
+                            'sellerId',
+                            'sellerName',
                             'type',
                             'status',
                             'currency',
                             'totalWithTax'
                         ]));
                     } else {
-                        document.getElementById('table_content').textContent = 'No invoice found';   
+                        tableContent.textContent = 'No invoice found';   
                     }
-
-                } else if (queryInvoiceResponse.status === "error") {
-                    document.getElementById('table_content').textContent = JSON.stringify(queryInvoiceResponse);
+                } else if (response.status === "error") {
+                    tableContent.textContent = JSON.stringify(response);
                 }
-            } else {
-                document.getElementById('table_content').textContent = "Status: " + request.status + ". Response text: " + request.responseText;
             }
         };
-        request.open("POST", "api/invoiceservice/queryinvoice", true);
-        request.setRequestHeader("Content-type", "text/plain");
-        request.send(JSON.stringify(params));
+        ajaxCall('api/invoiceservice/queryinvoice', params, onload);
+        
         document.getElementById('table_content').innerHTML = '';
         document.getElementById('messages').textContent = "Loading... Please wait";
     } else {
         logOut();
     }
-}
-
-function passKeyPressed(evt){
-    if (evt.keyCode === 13){
-        var params = {
-            security:{
-                username: user.id,
-                password: passwordInput.value
-            },
-            body: {
-                tin: user.id,
-                x509Certificate: user.certBase64   
-            }
-        };
-        passwordInput.disabled = true;
-        document.getElementById('loading').style.display = 'inline';
-        var request = new XMLHttpRequest();
-        request.onload = function() {
-            document.getElementById('loading').style.display = 'none';
-            if (request.status == 200) {
-                getUserResponse = JSON.parse(request.responseText);
-                if (getUserResponse.status === "success"){
-                    errorBox.style.display = 'none';
-                    if (getUserResponse.user.enterpriseEntries) {
-                        insertCompanyInfo();
-                    }
-                    companyInput.disabled = false;
-                    loginButton.disabled = false;
-                } else if (getUserResponse.status === "error") {
-                    passwordInput.disabled = false;
-                    errorBox.textContent = getUserResponse.message;
-                    errorBox.style.display = 'block';
-                }
-            } else {
-                passwordInput.disabled = false;
-                errorBox.textContent = "Status: " + request.status + ". Response text: " + request.responseText;
-                errorBox.style.display = 'block';
-            }
-        };
-        request.onerror = function(){
-            errorBox.textContent = "Status: " + request.status + ". Response text: " + request.responseText;
-            errorBox.style.display = 'block';  
-        };
-        request.open("POST", "api/sessionservice/getuser", true);
-        request.setRequestHeader("Content-type", "text/plain");
-        request.send(JSON.stringify(params));
-    }
-}
-
-function logIn(){
-    var params = {
-        security:{
-            username: user.id,
-            password: passwordInput.value
-        },
-        body: {
-            tin: companyInput.value,
-            x509Certificate: user.certBase64
-        }
-    };
-    var request = new XMLHttpRequest();
-    request.onload = function() {
-        if (request.status == 200) {
-            var createSessionResponse = JSON.parse(request.responseText);
-            if (createSessionResponse.status === "success"){
-                errorBox.style.display = 'none';
-                document.getElementById('login_page').style.display = 'none';
-                document.getElementById('app_page').style.display = 'block';
-                document.getElementById('user_company').textContent = companyInput.options[companyInput.selectedIndex].innerHTML;
-                setCookie('sessionId', createSessionResponse.sessionId, 30);
-                setCookie('userCompany', companyInput.options[companyInput.selectedIndex].innerHTML, 30);
-                //document.cookie = "sessionId=" + createSessionResponse.sessionId;
-                //document.cookie = "userCompany=" + companyInput.options[companyInput.selectedIndex].innerHTML;
-            } else if (createSessionResponse.status === "error") {
-                errorBox.textContent = getUserResponse.message;
-                errorBox.style.display = 'block';
-            }
-        } else {
-            errorBox.textContent = "Status: " + request.status + ". Response text: " + request.responseText;
-            errorBox.style.display = 'block';
-        }
-    };
-    request.open("POST", "api/sessionservice/createsession", true);
-    request.setRequestHeader("Content-type", "text/plain");
-    request.send(JSON.stringify(params));
 }
 
 function getPdf(){
@@ -273,31 +274,31 @@ function getPdf(){
             params.invoiceIds.push(checkboxes[i].value);
         };
     }
-    var request = new XMLHttpRequest();
-    request.onload = function() {
+
+    var onload = function (err, response) {
         document.getElementById('pdf_button').disabled = false;
-        if (request.status == 200) {
-            document.getElementById('messages').textContent = '';
-            var getPdfResponse = JSON.parse(request.responseText);
-            if (getPdfResponse.pdfPrepared) {
-                location.href = "/downloadpdf?orderid=" + getPdfResponse.orderId;
-            } else {
-                document.getElementById('messages').textContent = 'Cannot prepare PDF';
-            }
+        document.getElementById('search_button').disabled = false;
+        var messageBox = document.getElementById('messages');
+        if (err) {
+            messageBox.textContent = "Status: " + err.status + ". Response text: " + err.responseText;
         } else {
-            document.getElementById('messages').textContent = "Status: " + request.status + ". Response text: " + request.responseText;
+            messageBox.textContent = '';
+            if (response.pdfPrepared) {
+                location.href = "/api/downloadpdf?orderid=" + response.orderId;
+            } else {
+                messageBox.textContent = 'Cannot prepare PDF';
+            }
         }
-    };
-    request.open("POST", "api/getpdf", true);
-    request.setRequestHeader("Content-type", "text/plain");
-    request.send(JSON.stringify(params));
+    }
+    ajaxCall('api/preparepdf', params, onload);
+    
     document.getElementById('messages').textContent = "Loading... Please wait";
     document.getElementById('pdf_button').disabled = true;
+    document.getElementById('search_button').disabled = true;
 }
 
 function logOut(){
     user = {};
-    getUserResponse = {};
     document.cookie = 'sessionId=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     document.cookie = 'userCompany=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     location.href = "/";
