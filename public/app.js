@@ -1,11 +1,10 @@
 ;"use strict";
-var reader = new FileReader();
-var user = {};
 var errorBox = document.getElementById('errorbox');
 var usernameInput = document.getElementById('username');
 var passwordInput = document.getElementById('password');
 var companyInput = document.getElementById('company');
 var loginButton = document.getElementById('login_button');
+var loginHelper = EsfLogin();
 
 (function() {
     var sessionId = getCookie('sessionId');
@@ -15,6 +14,12 @@ var loginButton = document.getElementById('login_button');
         document.getElementById('app_page').style.display = 'block';
     }
 })();
+
+function onGoogleSignIn(user) {
+  var profile = user.getBasicProfile();
+  document.getElementById('gname').textContent = profile.getName();
+  document.getElementById('gemail').textContent = profile.getEmail();
+}
 
 function getCookie(cname) {
     var name = cname + "=";
@@ -38,149 +43,78 @@ function setCookie(cname, cvalue, exmins) {
     document.cookie = cname + "=" + cvalue + "; " + expires;
 }
 
-reader.onload = function(e) {
-    var certFileContent = reader.result;
-    var re = /-----BEGIN CERTIFICATE-----[\n\r\w\W]*(?=-----END CERTIFICATE-----)/g;
+document.getElementById("certificate").focus();
+
+//provide certificate and get user ID, if certificate is valid
+document.getElementById("certificate").addEventListener('change', function(evt){
+    document.getElementById('errorbox').style.display = 'none';
     for (var i=companyInput.options.length; i-->0 ;) {
         companyInput.options[i] = null;
     }
     companyInput.disabled = true;
     loginButton.disabled = true;
-    if (certFileContent.match(re)){
-        user.certBase64 = certFileContent.match(re)[0];
-        user.certBase64 = user.certBase64.replace(/-----BEGIN CERTIFICATE-----/,'');
-        user.certBase64 = user.certBase64.replace(/[\n\r ]/g,'');
-        user.certDecoded = atob(user.certBase64);
-        user.id = user.certDecoded.match(/IIN\d{12}/)[0];
-        user.id = user.id.replace(/IIN/,'');
-        usernameInput.value = user.id;
-        passwordInput.disabled = false;
-        passwordInput.value = null;
-        passwordInput.focus();
-    } else {
-        usernameInput.value = null;
-        passwordInput.disabled = true;
-        errorBox.textContent = 'Invalid certificate file';
-        errorBox.style.display = 'block';
-    }
-}
-
-document.getElementById("certificate").addEventListener('change', function(evt){
-    errorBox.style.display = 'none';
     var certFile = evt.target.files[0];
-    if (certFile) reader.readAsText(certFile);
+    if (certFile) loginHelper.readCert(certFile, function(err, userId) {
+        if (err) {
+            usernameInput.value = null;
+            passwordInput.disabled = true;
+            errorBox.textContent = err;
+            errorBox.style.display = 'block';
+        } else {
+            usernameInput.value = userId;
+            passwordInput.disabled = false;
+            passwordInput.value = null;
+            passwordInput.focus();
+        }
+    });
 }, false);
 
-//populate company select input with values
-function insertCompanyInfo(getUserResponse) {
-    for (var i=0; i < getUserResponse.user.enterpriseEntries.length; i++) {
-        var opt = document.createElement('option');
-        opt.value = getUserResponse.user.enterpriseEntries[i].tin;
-        opt.innerHTML = getUserResponse.user.enterpriseEntries[i].enterpriseTaxpayerInfo.nameRu;
-        companyInput.appendChild(opt);
-        if (getUserResponse.user.enterpriseEntries[i].branches) {
-            var branchesLength = getUserResponse.user.enterpriseEntries[i].branches.length;
-            for (var j=0; j < branchesLength; j++){
-                opt = document.createElement('option');
-                opt.value = getUserResponse.user.enterpriseEntries[i].branches[j].tin;
-                opt.innerHTML = getUserResponse.user.enterpriseEntries[i].branches[j].enterpriseTaxpayerInfo.nameRu;
-                companyInput.appendChild(opt);
-            }
-        }
-    }
-}
-
-function ajaxCall(url, params, onload) {
-    var request = new XMLHttpRequest();
-    request.onload = function () {
-        if (request.status == 200) {
-            var response = JSON.parse(request.responseText);
-            onload(null, response);
-        } else {
-            onload(request);
-        }
-    };
-    request.onerror = function(){
-        errorBox.textContent = "Status: " + request.status + ". Response text: " + request.responseText;
-        errorBox.style.display = 'block';  
-    };
-    request.open("POST", url, true);
-    request.setRequestHeader("Content-type", "text/plain");
-    request.send(JSON.stringify(params));
-}
-
-//get user's company info after entering password
+//provide password and get user's company info if password is correct
 function passKeyPressed(evt){
     if (evt.keyCode === 13){
-        var params = {
-            security:{
-                username: user.id,
-                password: passwordInput.value
-            },
-            body: {
-                tin: user.id,
-                x509Certificate: user.certBase64   
-            }
-        };
         passwordInput.disabled = true;
         document.getElementById('loading').style.display = 'inline';
         
-        var onload = function (err, response) {
+        loginHelper.getCompanyList(passwordInput.value, function(err, userCompanyList) {
             document.getElementById('loading').style.display = 'none';
+            passwordInput.value = '';
             if (err) {
                 passwordInput.disabled = false;
-                errorBox.textContent = "Status: " + err.status + ". Response text: " + err.responseText;
+                errorBox.textContent = err;
                 errorBox.style.display = 'block';
+                passwordInput.focus();
             } else {
-                if (response.status === "success"){
-                    errorBox.style.display = 'none';
-                    if (response.user.enterpriseEntries) {
-                        insertCompanyInfo(response);
-                    }
-                    companyInput.disabled = false;
-                    loginButton.disabled = false;
-                } else if (response.status === "error") {
-                    passwordInput.disabled = false;
-                    errorBox.textContent = response.message;
-                    errorBox.style.display = 'block';
+                errorBox.style.display = 'none';
+                for (var i=0; i < userCompanyList.length; i++) {
+                    var opt = document.createElement('option');
+                    opt.value = userCompanyList[i].id;
+                    opt.innerHTML = userCompanyList[i].name
+                    companyInput.appendChild(opt);
                 }
+                companyInput.disabled = false;
+                loginButton.disabled = false;
+                companyInput.focus();
             }
-        }
-        ajaxCall('api/sessionservice/getuser', params, onload);
+        });
     }
 }
 
+//get session ID and switch from login to working mode
 function logIn(){
-    var params = {
-        security:{
-            username: user.id,
-            password: passwordInput.value
-        },
-        body: {
-            tin: companyInput.value,
-            x509Certificate: user.certBase64
-        }
-    };
-    
-    var onload = function(err, response) {
+    loginHelper.getSessionId(companyInput.value, function(err, sessionId) {
         if (err) {
-            errorBox.textContent = "Status: " + request.status + ". Response text: " + request.responseText;
+            errorBox.textContent = err;
             errorBox.style.display = 'block';
         } else {
-            if (response.status === "success"){
-                errorBox.style.display = 'none';
-                document.getElementById('login_page').style.display = 'none';
-                document.getElementById('app_page').style.display = 'block';
-                document.getElementById('user_company').textContent = companyInput.options[companyInput.selectedIndex].innerHTML;
-                setCookie('sessionId', response.sessionId, 30);
-                setCookie('userCompany', companyInput.options[companyInput.selectedIndex].innerHTML, 30);
-            } else if (response.status === "error") {
-                errorBox.textContent = response.message;
-                errorBox.style.display = 'block';
-            }
+            delete loginHelper;
+            errorBox.style.display = 'none';
+            document.getElementById('login_page').style.display = 'none';
+            document.getElementById('app_page').style.display = 'block';
+            document.getElementById('user_company').textContent = companyInput.options[companyInput.selectedIndex].innerHTML;
+            setCookie('sessionId', sessionId, 30);
+            setCookie('userCompany', companyInput.options[companyInput.selectedIndex].innerHTML, 30);
         }
-    }
-    ajaxCall('api/sessionservice/createsession', params, onload);
+    });
 }
 
 function queryInvoice() {
@@ -298,8 +232,26 @@ function getPdf(){
 }
 
 function logOut(){
-    user = {};
     document.cookie = 'sessionId=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     document.cookie = 'userCompany=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     location.href = "/";
+}
+
+function ajaxCall(url, params, onload) {
+    var request = new XMLHttpRequest();
+    request.onload = function () {
+        if (request.status == 200) {
+            var response = JSON.parse(request.responseText);
+            onload(null, response);
+        } else {
+            onload(request);
+        }
+    };
+    request.onerror = function(){
+        errorBox.textContent = "Status: " + request.status + ". Response text: " + request.responseText;
+        errorBox.style.display = 'block';  
+    };
+    request.open("POST", url, true);
+    request.setRequestHeader("Content-type", "text/plain");
+    request.send(JSON.stringify(params));
 }

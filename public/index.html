@@ -7,6 +7,8 @@
     <title></title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <link rel="stylesheet" href="styles.css" type="text/css">
+    <meta name="google-signin-scope" content="https://www.googleapis.com/auth/spreadsheets">
+    <meta name="google-signin-client_id" content="1062830706450-djkcmd7pdpiu5tevbldg0j2psjldrpvo.apps.googleusercontent.com">
 </head>
 <body>
     <div id="app_page">
@@ -85,9 +87,27 @@
                 <button type="button" class="btn btn-primary" id="search_button" onclick="queryInvoice()">Search</button>
             </div>
             <div id="content">
-                <div id="buttons">
-                    <button type="button" class="btn btn-primary" id="pdf_button" onclick="getPdf()" disabled>PDF</button>
-                    <span id="messages"></span>
+                <div class="navbar">
+                    <div class="container-fluid" id="buttons">
+                        <ul class="nav navbar-nav">
+                            <li><button type="button" class="btn btn-primary navbar-btn" id="pdf_button" onclick="getPdf()" disabled>PDF</button></li>
+                            <li><p class="navbar-text" id="messages"></p</li>
+                        </ul>
+                        
+                        <ul class="nav navbar-nav navbar-right">
+                            <li>
+                                <div id="profile">
+                                    <b id="gname"></b><br/>
+                                    <i id="gemail"></i>
+                                </div>
+                            </li>
+                            <li><div class="g-signin2 navbar-btn" data-onsuccess="onGoogleSignIn"></div></li>
+                        </ul>
+                        <!--<div class="g-signin2" data-display="inline-block" data-onsuccess="onSignIn"></div>-->
+                        
+                        <!--<div id="messages"></div>-->
+                        
+                    </div>
                 </div>
                 
                 <div id="table_content"></div>
@@ -143,7 +163,9 @@
         <p>Password: TestPass123</p>
     </div>
     
+    <script type="text/javascript" src="esflogin.js"></script>
     <script type="text/javascript" src="esftable.js"></script>
     <script type="text/javascript" src="app.js"></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
 </body>
 </html>
