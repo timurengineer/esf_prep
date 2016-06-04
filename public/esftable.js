@@ -1,7 +1,7 @@
 (function(global) {
     
     var EsfTable = function(invoiceInfoList) {
-        return new EsfTable.init(invoiceInfoList);
+        this.invoiceInfoList = invoiceInfoList;
     }
     
     var handleCheckboxClick = function() {
@@ -141,15 +141,6 @@
             }
         }
     }
-    
-    EsfTable.init = function(invoiceInfoList) {
-        
-        var self = this;
-        self.invoiceInfoList = invoiceInfoList;
-        
-    }
-    
-    EsfTable.init.prototype = EsfTable.prototype;
     
     global.EsfTable = EsfTable;
     

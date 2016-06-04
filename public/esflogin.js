@@ -1,30 +1,22 @@
 (function(global) {
     
-    var EsfLogin = function() {
-        return new EsfLogin.init();
-    }
-    
-    var username;
-    var certBase64;
-    var password;
+    var EsfLogin = function() {};
     
     EsfLogin.prototype = {
         readCert: function(certFile, callback) {
+            var self = this; 
             var reader = new FileReader();
             reader.onload = function(e) {
-                var user ={};
-                var certFileContent = reader.result;
-                var re = /-----BEGIN CERTIFICATE-----[\n\r\w\W]*(?=-----END CERTIFICATE-----)/g;
-                if (certFileContent.match(re)){
-                    user.certBase64 = certFileContent.match(re)[0];
-                    user.certBase64 = user.certBase64.replace(/-----BEGIN CERTIFICATE-----/,'');
-                    user.certBase64 = user.certBase64.replace(/[\n\r ]/g,'');
-                    user.certDecoded = atob(user.certBase64);
-                    user.id = user.certDecoded.match(/IIN\d{12}/)[0];
-                    user.id = user.id.replace(/IIN/,'');
-                    username = user.id;
-                    certBase64 = user.certBase64;
-                    callback(null, user.id);
+                var re = /-----BEGIN CERTIFICATE-----[\n\r\w\W]*-----END CERTIFICATE-----/;
+                if (reader.result.match(re)){
+                    var certBase64 = reader.result.match(re)[0];
+                    certBase64 = certBase64.replace('-----BEGIN CERTIFICATE-----','');
+                    certBase64 = certBase64.replace('-----END CERTIFICATE-----','');
+                    certBase64 = certBase64.replace(/[\n\r ]/,'');
+                    self.certBase64 = certBase64;
+                    var username = atob(certBase64).match(/IIN\d{12}/)[0];
+                    self.username = username.replace(/IIN/,'');
+                    callback(null, self.username);
                 } else {
                     callback('Invalid certificate file');
                 }
@@ -32,15 +24,15 @@
             reader.readAsText(certFile);
         },
         getCompanyList: function(pass, callback) {
-            password = pass;
+            this.password = pass;
             var params = {
                 security:{
-                    username: username,
-                    password: password
+                    username: this.username,
+                    password: this.password
                 },
                 body: {
-                    tin: username,
-                    x509Certificate: certBase64   
+                    tin: this.username,
+                    x509Certificate: this.certBase64   
                 }
             };
             ajaxCall('api/sessionservice/getuser', params, function(err, response) {
@@ -73,12 +65,12 @@
         getSessionId: function(tin, callback) {
             var params = {
                 security:{
-                    username: username,
-                    password: password
+                    username: this.username,
+                    password: this.password
                 },
                 body: {
                     tin: tin,
-                    x509Certificate: certBase64   
+                    x509Certificate: this.certBase64   
                 }
             };
             ajaxCall('api/sessionservice/createsession', params, function(err, response) {
@@ -94,14 +86,6 @@
             });
         }
     };
-    
-    EsfLogin.init = function() {
-        
-        var self = this;
-        
-    }
-    
-    EsfLogin.init.prototype = EsfLogin.prototype;
     
     global.EsfLogin = EsfLogin;
     

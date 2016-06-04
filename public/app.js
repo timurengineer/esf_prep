@@ -1,10 +1,12 @@
 ;"use strict";
 var errorBox = document.getElementById('errorbox');
-var usernameInput = document.getElementById('username');
-var passwordInput = document.getElementById('password');
-var companyInput = document.getElementById('company');
-var loginButton = document.getElementById('login_button');
-var loginHelper = EsfLogin();
+var certificateInput = document.getElementById("certificate-input");
+var usernameInput = document.getElementById('username-input');
+var passwordInput = document.getElementById('password-input');
+var companyInput = document.getElementById('company-input');
+var loginButton = document.getElementById('login-button');
+var loginHelper = new EsfLogin();
+var apiHelper = new ApiHelper();
 
 (function() {
     var sessionId = getCookie('sessionId');
@@ -12,6 +14,7 @@ var loginHelper = EsfLogin();
         document.getElementById('user_company').textContent = getCookie('userCompany');
         document.getElementById('login_page').style.display = 'none';
         document.getElementById('app_page').style.display = 'block';
+        apiHelper.setSessionId(sessionId);
     }
 })();
 
@@ -43,11 +46,11 @@ function setCookie(cname, cvalue, exmins) {
     document.cookie = cname + "=" + cvalue + "; " + expires;
 }
 
-document.getElementById("certificate").focus();
+certificateInput.focus();
 
 //provide certificate and get user ID, if certificate is valid
-document.getElementById("certificate").addEventListener('change', function(evt){
-    document.getElementById('errorbox').style.display = 'none';
+certificateInput.addEventListener('change', function(evt){
+    errorBox.style.display = 'none';
     for (var i=companyInput.options.length; i-->0 ;) {
         companyInput.options[i] = null;
     }
@@ -77,7 +80,6 @@ function passKeyPressed(evt){
         
         loginHelper.getCompanyList(passwordInput.value, function(err, userCompanyList) {
             document.getElementById('loading').style.display = 'none';
-            passwordInput.value = '';
             if (err) {
                 passwordInput.disabled = false;
                 errorBox.textContent = err;
@@ -106,6 +108,7 @@ function logIn(){
             errorBox.textContent = err;
             errorBox.style.display = 'block';
         } else {
+            passwordInput.value = null;
             delete loginHelper;
             errorBox.style.display = 'none';
             document.getElementById('login_page').style.display = 'none';
@@ -113,91 +116,91 @@ function logIn(){
             document.getElementById('user_company').textContent = companyInput.options[companyInput.selectedIndex].innerHTML;
             setCookie('sessionId', sessionId, 30);
             setCookie('userCompany', companyInput.options[companyInput.selectedIndex].innerHTML, 30);
+            apiHelper.setSessionId(sessionId);
         }
     });
 }
 
 function queryInvoice() {
-    if (getCookie('sessionId')) {
-        var params = {
-            body: {
-                sessionId: getCookie('sessionId'),
-                criteria: {
-                    direction: ''
-                }
-            }
-        };
-        var directions = document.getElementsByName('direction');
-        var length = directions.length;
-        for (var i = 0; i < length; i++) {
-            if (directions[i].checked) {
-                params.body.criteria.direction = directions[i].value;
-                break;
-            }
-        }
-        var contragentTin = document.getElementById('company_id').value;
-        if (contragentTin) params.body.criteria.contragentTin = contragentTin;
-        var dateFrom = document.getElementById('date_from').value;
-        if (dateFrom) {
-            dateFrom = new Date(dateFrom);
-            params.body.criteria.dateFrom = dateFrom; 
-        }
-        var dateTo = document.getElementById('date_to').value;
-        if (dateTo) {
-            dateTo = new Date(dateTo);
-            params.body.criteria.dateTo = dateTo; 
-        }
-        var invoiceStatusArray = [];
-        var invoiceStatusCheckboxes = document.getElementsByName('invoice_status');
-        for (var i=0; i < invoiceStatusCheckboxes.length; i++){
-            if (invoiceStatusCheckboxes[i].checked) {
-                invoiceStatusArray.push(invoiceStatusCheckboxes[i].value);
-            }
-        }
-        params.body.criteria.invoiceStatusList = {
-            invoiceStatus: invoiceStatusArray
-        }
-        var invoiceType = document.getElementById('invoice_type').value;
-        if (invoiceType) params.body.criteria.invoiceType = invoiceType;
-        params.body.criteria.asc = false;
-        
-        var onload = function(err, response) {
-            document.getElementById('messages').textContent = "";
-            var tableContent = document.getElementById('table_content');
-            if (err) {
-                tableContent.textContent = "Status: " + err.status + ". Response text: " + err.responseText;
-            } else {
-                if (response.status === "success"){
-                    errorBox.style.display = 'none';
-                    if (response.invoiceInfoList) {
-                        var invoiceTable = EsfTable(response.invoiceInfoList.invoiceInfo);
-                        tableContent.appendChild(invoiceTable.getTable([
-                            'regNumber',
-                            'sellerId',
-                            'sellerName',
-                            'type',
-                            'status',
-                            'currency',
-                            'totalWithTax'
-                        ]));
-                    } else {
-                        tableContent.textContent = 'No invoice found';   
-                    }
-                } else if (response.status === "error") {
-                    tableContent.textContent = JSON.stringify(response);
-                }
-            }
-        };
-        ajaxCall('api/invoiceservice/queryinvoice', params, onload);
-        
-        document.getElementById('table_content').innerHTML = '';
-        document.getElementById('messages').textContent = "Loading... Please wait";
-    } else {
-        logOut();
+    if (!getCookie('sessionId')) 
+    {
+        return logOut();
     }
+    
+    document.getElementById('table_content').innerHTML = '';
+    document.getElementById('messages').textContent = "Loading... Please wait";
+    
+    var params = {
+        body: {
+            sessionId: '',
+            criteria: {
+                direction: ''
+            }
+        }
+    };
+    var directions = document.getElementsByName('direction');
+    var length = directions.length;
+    for (var i = 0; i < length; i++) {
+        if (directions[i].checked) {
+            params.body.criteria.direction = directions[i].value;
+            break;
+        }
+    }
+    var contragentTin = document.getElementById('company_id').value;
+    if (contragentTin) params.body.criteria.contragentTin = contragentTin;
+    var dateFrom = document.getElementById('date_from').value;
+    if (dateFrom) {
+        dateFrom = new Date(dateFrom);
+        params.body.criteria.dateFrom = dateFrom; 
+    }
+    var dateTo = document.getElementById('date_to').value;
+    if (dateTo) {
+        dateTo = new Date(dateTo);
+        params.body.criteria.dateTo = dateTo; 
+    }
+    var invoiceStatusArray = [];
+    var invoiceStatusCheckboxes = document.getElementsByName('invoice_status');
+    for (var i=0; i < invoiceStatusCheckboxes.length; i++){
+        if (invoiceStatusCheckboxes[i].checked) {
+            invoiceStatusArray.push(invoiceStatusCheckboxes[i].value);
+        }
+    }
+    params.body.criteria.invoiceStatusList = {
+        invoiceStatus: invoiceStatusArray
+    }
+    var invoiceType = document.getElementById('invoice_type').value;
+    if (invoiceType) params.body.criteria.invoiceType = invoiceType;
+    params.body.criteria.asc = false;
+    
+    apiHelper.queryInvoice(params, function(err, response) {
+        document.getElementById('messages').textContent = "";
+        var tableContent = document.getElementById('table_content');
+        if (err) {
+            tableContent.textContent = err;
+            return;
+        }
+        if (response.invoiceInfoList) {
+            var invoiceTable = new EsfTable(response.invoiceInfoList.invoiceInfo);
+            tableContent.appendChild(invoiceTable.getTable([
+                'regNumber',
+                'sellerId',
+                'sellerName',
+                'type',
+                'status',
+                'currency',
+                'totalWithTax'
+            ]));
+        } else {
+            tableContent.textContent = 'No invoice found';   
+        }
+    });
 }
 
 function getPdf(){
+    document.getElementById('messages').textContent = "Loading... Please wait";
+    document.getElementById('pdf_button').disabled = true;
+    document.getElementById('search_button').disabled = true;
+    
     var params = {
         sessionId: getCookie('sessionId'),
         invoiceIds: []
@@ -208,27 +211,17 @@ function getPdf(){
             params.invoiceIds.push(checkboxes[i].value);
         };
     }
-
-    var onload = function (err, response) {
+    
+    apiHelper.getPdf(params, function(err) {
         document.getElementById('pdf_button').disabled = false;
         document.getElementById('search_button').disabled = false;
         var messageBox = document.getElementById('messages');
+        messageBox.textContent = '';
         if (err) {
-            messageBox.textContent = "Status: " + err.status + ". Response text: " + err.responseText;
-        } else {
-            messageBox.textContent = '';
-            if (response.pdfPrepared) {
-                location.href = "/api/downloadpdf?orderid=" + response.orderId;
-            } else {
-                messageBox.textContent = 'Cannot prepare PDF';
-            }
+            messageBox.textContent = err;
+            return;
         }
-    }
-    ajaxCall('api/preparepdf', params, onload);
-    
-    document.getElementById('messages').textContent = "Loading... Please wait";
-    document.getElementById('pdf_button').disabled = true;
-    document.getElementById('search_button').disabled = true;
+    });
 }
 
 function logOut(){
