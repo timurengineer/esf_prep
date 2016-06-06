@@ -5,8 +5,11 @@ var usernameInput = document.getElementById('username-input');
 var passwordInput = document.getElementById('password-input');
 var companyInput = document.getElementById('company-input');
 var loginButton = document.getElementById('login-button');
-var loginHelper = new EsfLogin();
-var apiHelper = new ApiHelper();
+var messageBox = document.getElementById('messages');
+var tablePlaceholder = document.getElementById('table-placeholder');
+
+var loginHelper = new EsfLoginHelper();
+var apiHelper = new EsfApiHelper();
 
 (function() {
     var sessionId = getCookie('sessionId');
@@ -127,8 +130,8 @@ function queryInvoice() {
         return logOut();
     }
     
-    document.getElementById('table_content').innerHTML = '';
-    document.getElementById('messages').textContent = "Loading... Please wait";
+    tablePlaceholder.innerHTML = '';
+    messageBox.textContent = "Loading... Please wait";
     
     var params = {
         body: {
@@ -173,15 +176,14 @@ function queryInvoice() {
     params.body.criteria.asc = false;
     
     apiHelper.queryInvoice(params, function(err, response) {
-        document.getElementById('messages').textContent = "";
-        var tableContent = document.getElementById('table_content');
+        messageBox.textContent = "";
         if (err) {
-            tableContent.textContent = err;
+            tablePlaceholder.textContent = err;
             return;
         }
         if (response.invoiceInfoList) {
             var invoiceTable = new EsfTable(response.invoiceInfoList.invoiceInfo);
-            tableContent.appendChild(invoiceTable.getTable([
+            tablePlaceholder.appendChild(invoiceTable.getTable([
                 'regNumber',
                 'sellerId',
                 'sellerName',
@@ -191,13 +193,13 @@ function queryInvoice() {
                 'totalWithTax'
             ]));
         } else {
-            tableContent.textContent = 'No invoice found';   
+            tablePlaceholder.textContent = 'No invoice found';   
         }
     });
 }
 
 function getPdf(){
-    document.getElementById('messages').textContent = "Loading... Please wait";
+    messageBox.textContent = "Loading... Please wait";
     document.getElementById('pdf_button').disabled = true;
     document.getElementById('search_button').disabled = true;
     
@@ -215,7 +217,6 @@ function getPdf(){
     apiHelper.getPdf(params, function(err) {
         document.getElementById('pdf_button').disabled = false;
         document.getElementById('search_button').disabled = false;
-        var messageBox = document.getElementById('messages');
         messageBox.textContent = '';
         if (err) {
             messageBox.textContent = err;
@@ -228,23 +229,4 @@ function logOut(){
     document.cookie = 'sessionId=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     document.cookie = 'userCompany=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     location.href = "/";
-}
-
-function ajaxCall(url, params, onload) {
-    var request = new XMLHttpRequest();
-    request.onload = function () {
-        if (request.status == 200) {
-            var response = JSON.parse(request.responseText);
-            onload(null, response);
-        } else {
-            onload(request);
-        }
-    };
-    request.onerror = function(){
-        errorBox.textContent = "Status: " + request.status + ". Response text: " + request.responseText;
-        errorBox.style.display = 'block';  
-    };
-    request.open("POST", url, true);
-    request.setRequestHeader("Content-type", "text/plain");
-    request.send(JSON.stringify(params));
 }

@@ -95,13 +95,9 @@ var server = http.createServer(function(request, response){
                 response.writeHead(200, {"Content-Type": "text/javascript"});
                 fs.createReadStream("./public/esftable.js").pipe(response);
                 break;
-            case "/esflogin.js" :
+            case "/apihelpers.js" :
                 response.writeHead(200, {"Content-Type": "text/javascript"});
-                fs.createReadStream("./public/esflogin.js").pipe(response);
-                break;
-            case "/esfapi.js" :
-                response.writeHead(200, {"Content-Type": "text/javascript"});
-                fs.createReadStream("./public/esfapi.js").pipe(response);
+                fs.createReadStream("./public/apihelpers.js").pipe(response);
                 break;
             case "/styles.css" :
                 response.writeHead(200, {"Content-Type": "text/css"});
