@@ -167,12 +167,12 @@ EsfApiHelper.prototype = {
         });
     },
     getPdf: function (params, callback) {
-        ajaxCall('api/preparepdf', params, function(err, response) {
+        ajaxCall('api/pdfservice/preparepdf', params, function(err, response) {
             if (err) {
                 return callback("Status: " + err.status + ". Response text: " + err.responseText); 
             }
             if (response.pdfPrepared) {
-                location.href = "/api/downloadpdf?orderid=" + response.orderId;
+                location.href = "/api/pdfservice/downloadpdf?orderid=" + response.orderId;
                 callback();
             } else {
                 return callback('Cannot prepare PDF');

@@ -121,7 +121,7 @@ var server = http.createServer(function (request, response) {
                 });
                 fs.createReadStream("./public/seller.cer").pipe(response);
                 break;
-            case "/api/downloadpdf":
+            case "/api/pdfservice/downloadpdf":
                 if (requestUrl.search){
                     pdfService.downloadPdf(requestUrl.query.orderid, response);
                 }
@@ -151,7 +151,7 @@ var server = http.createServer(function (request, response) {
                 case '/api/invoiceservice/queryinvoice':
                     invoiceService('queryInvoice', formData, response);
                     break;
-                case '/api/preparepdf':
+                case '/api/pdfservice/preparepdf':
                     pdfService.preparePdf(invoiceResponse, formData, response);
                     break;
             }
