@@ -50,8 +50,20 @@ function switchToView(view) {
     }
 }
 
+//do not let user click buttons while waiting for server response
+function waitingForServer(on) {
+    if (on) {
+        messageBox.textContent = "Loading... Please wait";
+        pdfButton.disabled = true;
+        document.getElementById('search_button').disabled = true;
+    } else {
+        document.getElementById('search_button').disabled = false;
+        messageBox.textContent = '';
+    }
+}
+
 //provide certificate and get user ID, if certificate is valid
-document.getElementById("certificate-input").addEventListener('change', function(evt){
+document.getElementById("certificate-input").addEventListener('change', function(evt) {
     errorBox.style.display = 'none';
     for (var i = companyInput.options.length; i-->0 ;) {
         companyInput.options[i] = null;
@@ -140,8 +152,7 @@ function queryInvoice() {
         return logOut();
     }
     
-    tablePlaceholder.innerHTML = '';
-    messageBox.textContent = "Loading... Please wait";
+    waitingForServer(true);
     
     var directions = document.getElementsByName('direction');
     var contragentTin = document.getElementById('company_id').value;
@@ -187,7 +198,7 @@ function queryInvoice() {
     params.body.criteria.asc = false;
     
     apiHelper.queryInvoice(params, function(err, response) {
-        messageBox.textContent = "";
+        waitingForServer(false);
         if (err) {
             tablePlaceholder.textContent = err;
             return;
@@ -211,9 +222,8 @@ function queryInvoice() {
 }
 
 function getPdf(){
-    messageBox.textContent = "Loading... Please wait";
-    pdfButton.disabled = true;
-    document.getElementById('search_button').disabled = true;
+    
+    waitingForServer(true);
     
     var params = {
         sessionId: getCookie('sessionId'),
@@ -227,9 +237,7 @@ function getPdf(){
     }
     
     apiHelper.getPdf(params, function(err) {
-        pdfButton.disabled = false;
-        document.getElementById('search_button').disabled = false;
-        messageBox.textContent = '';
+        waitingForServer(false);
         if (err) {
             messageBox.textContent = err;
             return;
