@@ -17,7 +17,7 @@ var wsdlOptions = {
     }
 };
 
-var sessionService = function(operation, formData, response){
+var sessionService = function (operation, formData, response){
     soap.createClient(session_service_wsdl, wsdlOptions, function(err, client) {
         if (err) throw err;
         client.setSecurity(new soap.WSSecurity(formData.security.username, formData.security.password, {hasTimeStamp: false}));
@@ -36,7 +36,7 @@ var sessionService = function(operation, formData, response){
                 }
             }, {rejectUnauthorized: false});
         } else if (operation === 'createSession') {
-            client.SessionService.SessionServicePort.createSession(formData.body, function(err, result){
+            client.SessionService.SessionServicePort.createSession(formData.body, function (err, result) {
                 if (err) {
                     var err_response = {
                         message: err.message,
@@ -45,7 +45,7 @@ var sessionService = function(operation, formData, response){
                     response.end(JSON.stringify(err_response));
                 } else {
                     invoiceResponse[result.sessionId] = {}
-                    setTimeout(function(){
+                    setTimeout(function () {
                         delete invoiceResponse[result.sessionId];
                         console.log('Session deleted ', result.sessionId);
                     }, 30*60*1000);
@@ -57,8 +57,8 @@ var sessionService = function(operation, formData, response){
     });
 };
 
-var invoiceService = function(operation, formData, response){
-    soap.createClient(invoice_service_wsdl, wsdlOptions, function(err, client) {
+var invoiceService = function (operation, formData, response) {
+    soap.createClient(invoice_service_wsdl, wsdlOptions, function (err, client) {
         if (err) throw err;
         if (operation === 'queryInvoice'){
             if (invoiceResponse[formData.body.sessionId]){
@@ -76,14 +76,18 @@ var invoiceService = function(operation, formData, response){
                     }
                 },{rejectUnauthorized: false});
             } else {
-                response.end('Error: no session');
+                var err_response = {
+                    message: 'Please log out and create new session',
+                    status: 'error'
+                };
+                response.end(JSON.stringify(err_response));
             }
         }
     });
 };
 
-//handle client requests
-var server = http.createServer(function(request, response){
+//request handles
+var server = http.createServer(function (request, response) {
 	if (request.method === 'GET'){
         var requestUrl = url.parse(request.url, true);
         switch (requestUrl.pathname) {

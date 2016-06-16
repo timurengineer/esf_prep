@@ -7,11 +7,9 @@
     <title></title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <link rel="stylesheet" href="styles.css" type="text/css">
-    <meta name="google-signin-scope" content="https://www.googleapis.com/auth/spreadsheets">
-    <meta name="google-signin-client_id" content="1062830706450-djkcmd7pdpiu5tevbldg0j2psjldrpvo.apps.googleusercontent.com">
 </head>
 <body>
-    <div id="app_page">
+    <div id="main-view">
         <nav class="navbar navbar-default navbar-fixed-top">
             <div class="container-fluid">
                 <a href="/" class="navbar-brand">ESF</a>
@@ -90,7 +88,7 @@
                 <div class="navbar">
                     <div class="container-fluid" id="buttons">
                         <ul class="nav navbar-nav">
-                            <li><button type="button" class="btn btn-primary navbar-btn" id="pdf_button" onclick="getPdf()" disabled>PDF</button></li>
+                            <li><button type="button" class="btn btn-primary navbar-btn" id="pdf_button" onclick="getPdf()" disabled>Export to PDF</button></li>
                             <li><p class="navbar-text" id="messages"></p</li>
                         </ul>
                         
@@ -110,7 +108,7 @@
             </div>
         </div>
     </div>
-    <div id="login_page">
+    <div id="login-view">
         <div class="container col-md-6 col-md-offset-3">
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -134,7 +132,7 @@
                         <div class="form-group">
                             <label for="password" class="col-sm-2 control-label">Password</label>
                             <div class="col-sm-10">
-                                <input type="password" class="form-control" id="password-input" disabled onKeyUp="passKeyPressed(event)">
+                                <input type="password" class="form-control" id="password-input" disabled>
                             </div>
                         </div>
                         <div class="form-group">
@@ -146,7 +144,7 @@
                         </div>
                         <div class="form-group">
                             <div class="col-sm-offset-2 col-sm-10">
-                                <button type="button" class="btn btn-primary" id="login-button" onclick="logIn()" disabled>Log in</button>
+                                <button type="button" class="btn btn-primary" id="login-button" disabled>Log in</button>
                                 <span id="loading" style="display: none;">Loading... Please wait</span>
                             </div>
                         </div>
@@ -170,6 +168,5 @@
     <script type="text/javascript" src="esftable.js"></script>
     <script type="text/javascript" src="apihelpers.js"></script>
     <script type="text/javascript" src="app.js"></script>
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
 </body>
 </html>

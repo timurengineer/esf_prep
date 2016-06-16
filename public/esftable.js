@@ -1,10 +1,13 @@
 (function(global) {
     
-    var EsfTable = function(invoiceInfoList) {
-        this.invoiceInfoList = invoiceInfoList;
+    var EsfTable = function(invoiceInfoList, pdfButton, messageBox) {
+        var self = this;
+        self.invoiceInfoList = invoiceInfoList;
+        self.pdfButton = pdfButton;
+        self.messageBox = messageBox;
     }
     
-    var handleCheckboxClick = function() {
+    var updateSelectedCount = function(pdfButton, messageBox) {
         var checkboxes = document.getElementsByName('invoice_checkbox');
         var count = 0;
         for(var i=0; i < checkboxes.length; i++) {
@@ -13,23 +16,23 @@
             };
         }
         if (count < 251 && count > 1){
-            document.getElementById('messages').textContent = count + ' invoices selected';
-            document.getElementById('pdf_button').disabled = false;
+            messageBox.textContent = count + ' invoices selected';
+            pdfButton.disabled = false;
         } else if (count === 1) {
-            document.getElementById('messages').textContent = count + ' invoice selected';
-            document.getElementById('pdf_button').disabled = false;
+            messageBox.textContent = count + ' invoice selected';
+            pdfButton.disabled = false;
         } else if (count > 250) {
-            document.getElementById('messages').textContent = count + ' invoices selected. Cannot export more that 250 invoices at a time.';
-            document.getElementById('pdf_button').disabled = true;
+            messageBox.textContent = count + ' invoices selected. Cannot export more that 250 invoices at a time.';
+            pdfButton.disabled = true;
         } else {
-            document.getElementById('messages').textContent = '';
-            document.getElementById('pdf_button').disabled = true;
+            messageBox.textContent = '';
+            pdfButton.disabled = true;
         }
     };
     
     EsfTable.prototype = {
         getTable: function(selectedColumns) {
-            
+            var self = this;
             var tbl = document.createElement('table');
             tbl.className = 'table table-hover table-condensed';
 
@@ -40,13 +43,13 @@
             var chkbox = document.createElement('input');
             chkbox.type = 'checkbox';
             chkbox.name = 'checkall_checkbox';
-            chkbox.onclick = function() {
+            chkbox.addEventListener('click', function() {
                 var checkboxes = document.getElementsByName('invoice_checkbox');
                 for(var i=0; i < checkboxes.length; i++) {
                     checkboxes[i].checked = this.checked;
                 }
-                handleCheckboxClick();
-            };
+                updateSelectedCount(self.pdfButton, self.messageBox);
+            });
             th.appendChild(chkbox);
             tr.appendChild(th);
             for (var i=0; i<selectedColumns.length; i++){
@@ -59,17 +62,24 @@
 
             //table body
             var tbdy = document.createElement('tbody');
-            var length = this.invoiceInfoList.length;
+            var length = self.invoiceInfoList.length;
             for (var i = 0; i < length; i++) {
                 var tr = document.createElement('tr');
                 var td = document.createElement('td');
-                td.appendChild(columns['checkbox'].getValue(this.invoiceInfoList[i]));
+                var chkbox = document.createElement('input');
+                chkbox.type = 'checkbox';
+                chkbox.name = 'invoice_checkbox';
+                chkbox.value = self.invoiceInfoList[i].invoiceId;
+                chkbox.addEventListener('click', function() {
+                    updateSelectedCount(self.pdfButton, self.messageBox);
+                })
+                td.appendChild(chkbox);
                 tr.appendChild(td);
                 for (var j=0; j < selectedColumns.length; j++){
                     td = document.createElement('td');
                     if (columns[selectedColumns[j]].class) td.className = columns[selectedColumns[j]].class;
                     if (columns[selectedColumns[j]].attr) td.setAttribute(columns[selectedColumns[j]].attr.name, columns[selectedColumns[j]].attr.value)
-                    td.appendChild(document.createTextNode(columns[selectedColumns[j]].getValue(this.invoiceInfoList[i])));
+                    td.appendChild(document.createTextNode(columns[selectedColumns[j]].getValue(self.invoiceInfoList[i])));
                     tr.appendChild(td);
                 }
                 tbdy.appendChild(tr);
@@ -82,17 +92,6 @@
     };
     
     var columns = {
-        checkbox: {
-            header: '',
-            getValue: function(invL){
-                var chkbox = document.createElement('input');
-                chkbox.type = 'checkbox';
-                chkbox.name = 'invoice_checkbox';
-                chkbox.value = invL.invoiceId;
-                chkbox.onclick = handleCheckboxClick;
-                return chkbox;
-            }
-        },
         regNumber: {
             header: 'Registration Number',
             attr: {

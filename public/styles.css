@@ -1,14 +1,8 @@
-html, body{
-}
-
 body { 
     padding-top: 50px;
 }
 
-#login_page {
-}
-
-#app_page {
+#main-view {
     display: none;
     height: 100%;
 }
@@ -30,16 +24,9 @@ body {
 
 #content_area {
     margin-left: 200px;
-    /*margin-top: 50px;*/
 }
 
 #buttons {
-    /*position: fixed;
-    top: 50px;
-    left: 200px;
-    background-color: white;
-
-    width: auto;*/
     -webkit-box-shadow: 0 1px 2px -2px #000000;
     -moz-box-shadow: 0 1px 2px -2px #000000;
     box-shadow: 0 1px 2px -2px #000000;
@@ -70,10 +57,6 @@ body {
 .g-signin2 {
     margin-left: 10px;
 }
-
-/*#my-signin2 {
-    display: inline-block;
-}*/
 
 .number-cell {
     text-align: right;

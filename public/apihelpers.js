@@ -20,39 +20,72 @@ function ajaxCall(url, params, callback) {
     
 //-------------- LOGIN HELPER -----------------
 
-var EsfLoginHelper = function() {};
+var EsfLoginHelper = function () {
+    
+    var self = this;
+    var username = '';
+    var password = '';
+    var certBase64 = '';
+    
+    self.setUsername = function (uname) {
+        username = uname;
+    };
+    
+    self.getUsername = function () {
+        return username;
+    }
+    
+    self.setCertBase64 = function (cert) {
+        certBase64 = cert;
+    }
+    
+    self.getCertBase64 = function () {
+        return certBase64;
+    }
+    
+    self.setPassword = function (pwd) {
+        password = pwd;
+    }
+    
+    self.getPassword = function () {
+        return password;
+    }
+    
+};
 
 EsfLoginHelper.prototype = {
-    readCert: function(certFile, callback) {
+    readCert: function (certFile, callback) { // read certificate file, parse and return username
         var self = this; 
         var reader = new FileReader();
         reader.onload = function(e) {
             var re = /-----BEGIN CERTIFICATE-----[\n\r\w\W]*-----END CERTIFICATE-----/;
             if (reader.result.match(re)){
+                var username = '';
                 var certBase64 = reader.result.match(re)[0];
                 certBase64 = certBase64.replace('-----BEGIN CERTIFICATE-----','');
                 certBase64 = certBase64.replace('-----END CERTIFICATE-----','');
-                certBase64 = certBase64.replace(/[\n\r ]/,'');
-                self.certBase64 = certBase64;
-                var username = atob(certBase64).match(/IIN\d{12}/)[0];
-                self.username = username.replace(/IIN/,'');
-                callback(null, self.username);
+                certBase64 = certBase64.replace(/[\n\r\s]/g,'');
+                self.setCertBase64(certBase64);
+                username = atob(certBase64).match(/IIN\d{12}/)[0];
+                username = username.replace(/IIN/,'');
+                self.setUsername(username);
+                callback(null, username);
             } else {
                 callback('Invalid certificate file');
             }
         }
         reader.readAsText(certFile);
     },
-    getCompanyList: function(pass, callback) {
-        this.password = pass;
+    getCompanyList: function (pass, callback) { // retrieve a list of companies that user has access to
+        this.setPassword(pass);
         var params = {
             security:{
-                username: this.username,
-                password: this.password
+                username: this.getUsername(),
+                password: this.getPassword()
             },
             body: {
-                tin: this.username,
-                x509Certificate: this.certBase64   
+                tin: this.getUsername(),
+                x509Certificate: this.getCertBase64()   
             }
         };
         ajaxCall('api/sessionservice/getuser', params, function(err, response) {
@@ -82,15 +115,15 @@ EsfLoginHelper.prototype = {
             }
         });
     },
-    getSessionId: function(tin, callback) {
+    getSessionId: function (tin, callback) {
         var params = {
             security:{
-                username: this.username,
-                password: this.password
+                username: this.getUsername(),
+                password: this.getPassword()
             },
             body: {
                 tin: tin,
-                x509Certificate: this.certBase64   
+                x509Certificate: this.getCertBase64()   
             }
         };
         ajaxCall('api/sessionservice/createsession', params, function(err, response) {
@@ -107,18 +140,19 @@ EsfLoginHelper.prototype = {
     }
 };
 
+// expose LoginHelper constructor function to global scope
 global.EsfLoginHelper = EsfLoginHelper;
 
 
 //-------------- API HELPER -----------------
 
-var EsfApiHelper = function(sessionId) {};
+var EsfApiHelper = function (sessionId) {};
 
 EsfApiHelper.prototype = {
-    setSessionId: function(sessionId) {
+    setSessionId: function (sessionId) {
         this.sessionId = sessionId;
     },
-    queryInvoice: function(params, callback) {
+    queryInvoice: function (params, callback) {
         params.body.sessionId = this.sessionId;
         ajaxCall('api/invoiceservice/queryinvoice', params, function(err, response) {
             if (err) {
@@ -132,7 +166,7 @@ EsfApiHelper.prototype = {
             }
         });
     },
-    getPdf: function(params, callback) {
+    getPdf: function (params, callback) {
         ajaxCall('api/preparepdf', params, function(err, response) {
             if (err) {
                 return callback("Status: " + err.status + ". Response text: " + err.responseText); 

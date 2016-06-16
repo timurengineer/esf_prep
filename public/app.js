@@ -1,30 +1,21 @@
-;"use strict";
+"use strict";
 var errorBox = document.getElementById('errorbox');
-var certificateInput = document.getElementById("certificate-input");
 var usernameInput = document.getElementById('username-input');
 var passwordInput = document.getElementById('password-input');
 var companyInput = document.getElementById('company-input');
 var loginButton = document.getElementById('login-button');
 var messageBox = document.getElementById('messages');
 var tablePlaceholder = document.getElementById('table-placeholder');
+var pdfButton = document.getElementById('pdf_button');
 
 var loginHelper = new EsfLoginHelper();
 var apiHelper = new EsfApiHelper();
 
-(function() {
-    var sessionId = getCookie('sessionId');
-    if (sessionId) {
-        document.getElementById('user_company').textContent = getCookie('userCompany');
-        document.getElementById('login_page').style.display = 'none';
-        document.getElementById('app_page').style.display = 'block';
-        apiHelper.setSessionId(sessionId);
-    }
-})();
-
-function onGoogleSignIn(user) {
-  var profile = user.getBasicProfile();
-  document.getElementById('gname').textContent = profile.getName();
-  document.getElementById('gemail').textContent = profile.getEmail();
+// switch to main view if sessionId cookie exist
+if (getCookie('sessionId')) {
+    document.getElementById('user_company').textContent = getCookie('userCompany');
+    switchToView('main');
+    apiHelper.setSessionId(getCookie('sessionId'));
 }
 
 function getCookie(cname) {
@@ -49,12 +40,20 @@ function setCookie(cname, cvalue, exmins) {
     document.cookie = cname + "=" + cvalue + "; " + expires;
 }
 
-certificateInput.focus();
+function switchToView(view) {
+    if (view === 'main') {
+        document.getElementById('login-view').style.display = 'none';
+        document.getElementById('main-view').style.display = 'block';
+    } else if (view === 'login') {
+        document.getElementById('login-view').style.display = 'block';
+        document.getElementById('main-view').style.display = 'none';
+    }
+}
 
 //provide certificate and get user ID, if certificate is valid
-certificateInput.addEventListener('change', function(evt){
+document.getElementById("certificate-input").addEventListener('change', function(evt){
     errorBox.style.display = 'none';
-    for (var i=companyInput.options.length; i-->0 ;) {
+    for (var i = companyInput.options.length; i-->0 ;) {
         companyInput.options[i] = null;
     }
     companyInput.disabled = true;
@@ -75,9 +74,9 @@ certificateInput.addEventListener('change', function(evt){
     });
 }, false);
 
-//provide password and get user's company info if password is correct
-function passKeyPressed(evt){
-    if (evt.keyCode === 13){
+//get user's company info if password is correct
+passwordInput.addEventListener('keyup', function(evt){
+    if (evt.keyCode === 13) {
         passwordInput.disabled = true;
         document.getElementById('loading').style.display = 'inline';
         
@@ -102,20 +101,19 @@ function passKeyPressed(evt){
             }
         });
     }
-}
+});
 
-//get session ID and switch from login to working mode
-function logIn(){
+//get session ID and switch from login to main view
+function login() {
     loginHelper.getSessionId(companyInput.value, function(err, sessionId) {
         if (err) {
             errorBox.textContent = err;
             errorBox.style.display = 'block';
         } else {
             passwordInput.value = null;
-            delete loginHelper;
+            loginHelper.password = null;
             errorBox.style.display = 'none';
-            document.getElementById('login_page').style.display = 'none';
-            document.getElementById('app_page').style.display = 'block';
+            switchToView('main');
             document.getElementById('user_company').textContent = companyInput.options[companyInput.selectedIndex].innerHTML;
             setCookie('sessionId', sessionId, 30);
             setCookie('userCompany', companyInput.options[companyInput.selectedIndex].innerHTML, 30);
@@ -124,7 +122,19 @@ function logIn(){
     });
 }
 
+//login when enter is pressed while company select is in focus
+document.getElementById('company-input').addEventListener('keyup', function (evt) {
+    if (evt.keyCode === 13) {
+        login();
+    }
+});
+
+//bind login function with login button
+loginButton.addEventListener('click', login);
+
+//query invoice and draw the result table
 function queryInvoice() {
+    //logout if session does not exist
     if (!getCookie('sessionId')) 
     {
         return logOut();
@@ -133,6 +143,15 @@ function queryInvoice() {
     tablePlaceholder.innerHTML = '';
     messageBox.textContent = "Loading... Please wait";
     
+    var directions = document.getElementsByName('direction');
+    var contragentTin = document.getElementById('company_id').value;
+    var dateFrom = document.getElementById('date_from').value;
+    var dateTo = document.getElementById('date_to').value;
+    var invoiceStatusArray = [];
+    var invoiceStatusCheckboxes = document.getElementsByName('invoice_status');
+    var invoiceType = document.getElementById('invoice_type').value;
+    
+    //set params
     var params = {
         body: {
             sessionId: '',
@@ -141,28 +160,21 @@ function queryInvoice() {
             }
         }
     };
-    var directions = document.getElementsByName('direction');
-    var length = directions.length;
-    for (var i = 0; i < length; i++) {
+    for (var i = 0; i < directions.length; i++) {
         if (directions[i].checked) {
             params.body.criteria.direction = directions[i].value;
             break;
         }
     }
-    var contragentTin = document.getElementById('company_id').value;
     if (contragentTin) params.body.criteria.contragentTin = contragentTin;
-    var dateFrom = document.getElementById('date_from').value;
     if (dateFrom) {
         dateFrom = new Date(dateFrom);
         params.body.criteria.dateFrom = dateFrom; 
     }
-    var dateTo = document.getElementById('date_to').value;
     if (dateTo) {
         dateTo = new Date(dateTo);
         params.body.criteria.dateTo = dateTo; 
     }
-    var invoiceStatusArray = [];
-    var invoiceStatusCheckboxes = document.getElementsByName('invoice_status');
     for (var i=0; i < invoiceStatusCheckboxes.length; i++){
         if (invoiceStatusCheckboxes[i].checked) {
             invoiceStatusArray.push(invoiceStatusCheckboxes[i].value);
@@ -171,7 +183,6 @@ function queryInvoice() {
     params.body.criteria.invoiceStatusList = {
         invoiceStatus: invoiceStatusArray
     }
-    var invoiceType = document.getElementById('invoice_type').value;
     if (invoiceType) params.body.criteria.invoiceType = invoiceType;
     params.body.criteria.asc = false;
     
@@ -182,8 +193,8 @@ function queryInvoice() {
             return;
         }
         if (response.invoiceInfoList) {
-            var invoiceTable = new EsfTable(response.invoiceInfoList.invoiceInfo);
-            tablePlaceholder.appendChild(invoiceTable.getTable([
+            var invoiceTable = new EsfTable(response.invoiceInfoList.invoiceInfo, pdfButton, messageBox);
+            var invoiceTableElement = invoiceTable.getTable([
                 'regNumber',
                 'sellerId',
                 'sellerName',
@@ -191,7 +202,8 @@ function queryInvoice() {
                 'status',
                 'currency',
                 'totalWithTax'
-            ]));
+            ]);
+            tablePlaceholder.appendChild(invoiceTableElement);
         } else {
             tablePlaceholder.textContent = 'No invoice found';   
         }
@@ -200,7 +212,7 @@ function queryInvoice() {
 
 function getPdf(){
     messageBox.textContent = "Loading... Please wait";
-    document.getElementById('pdf_button').disabled = true;
+    pdfButton.disabled = true;
     document.getElementById('search_button').disabled = true;
     
     var params = {
@@ -215,7 +227,7 @@ function getPdf(){
     }
     
     apiHelper.getPdf(params, function(err) {
-        document.getElementById('pdf_button').disabled = false;
+        pdfButton.disabled = false;
         document.getElementById('search_button').disabled = false;
         messageBox.textContent = '';
         if (err) {
