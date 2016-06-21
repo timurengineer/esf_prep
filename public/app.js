@@ -5,7 +5,7 @@ var passwordInput = document.getElementById('password-input');
 var companyInput = document.getElementById('company-input');
 var loginButton = document.getElementById('login-button');
 var messageBox = document.getElementById('messages');
-var tablePlaceholder = document.getElementById('table-placeholder');
+var tablePlaceholder = document.getElementById('table-placeholder'); //placeholder for retrieved data
 var pdfButton = document.getElementById('pdf_button');
 
 var loginHelper = new EsfLoginHelper();
@@ -41,6 +41,7 @@ function setCookie(cname, cvalue, exmins) {
     document.cookie = cname + "=" + cvalue + "; " + expires;
 }
 
+//switch between main and login view
 function switchToView(view) {
     if (view === 'main') {
         document.getElementById('login-view').style.display = 'none';
@@ -219,6 +220,7 @@ function queryInvoice() {
 
 function getPdf(){
     
+    //disable buttons and show loading message
     waitingForServer(true);
     
     var params = {
@@ -266,6 +268,7 @@ function saveSettingsClick() {
     
 }
 
+//show column selection panel
 document.getElementById('settings-button').addEventListener('click', function() {
     while (tablePlaceholder.firstChild) {
         tablePlaceholder.removeChild(tablePlaceholder.firstChild);

@@ -1,5 +1,6 @@
 (function(global) {
-    
+
+//auxiliary function. makes ajax calls
 function ajaxCall(url, params, callback) {
     var request = new XMLHttpRequest();
     request.onload = function () {
@@ -19,7 +20,7 @@ function ajaxCall(url, params, callback) {
 }
     
 //-------------- LOGIN HELPER -----------------
-
+//interacts with server API to obtain a sessionId
 var EsfLoginHelper = function () {
     
     var self = this;
@@ -145,7 +146,7 @@ global.EsfLoginHelper = EsfLoginHelper;
 
 
 //-------------- API HELPER -----------------
-
+//interact with server API to retrieve the data
 var EsfApiHelper = function (sessionId) {};
 
 EsfApiHelper.prototype = {

@@ -1,3 +1,4 @@
+//EsfTable object takes care of appearence of retrieved data in the main view
 (function(global) {
     
     var EsfTable = function(pdfButton, messageBox) {
@@ -16,6 +17,7 @@
         ];
     }
     
+    //updates the selected invoices counter. triggered by checkbox click
     var updateSelectedCount = function(pdfButton, messageBox) {
         var checkboxes = document.getElementsByName('invoice_checkbox');
         var count = 0;
@@ -40,6 +42,7 @@
     };
     
     EsfTable.prototype = {
+        //return table element. List of ivoices
         getTable: function() {
             var self = this;
             var selectedColumns = self.selectedColumns;
@@ -99,6 +102,7 @@
             tbl.appendChild(tbdy);
             return tbl;
         },
+        //returns column selection panel div
         getSettingsPanel: function() {
             var self = this;
             var settingsPanel = document.createElement('div');
