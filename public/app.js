@@ -10,6 +10,7 @@ var pdfButton = document.getElementById('pdf_button');
 
 var loginHelper = new EsfLoginHelper();
 var apiHelper = new EsfApiHelper();
+var invoiceTable = new EsfTable(pdfButton, messageBox);
 
 // switch to main view if sessionId cookie exist
 if (getCookie('sessionId')) {
@@ -204,16 +205,11 @@ function queryInvoice() {
             return;
         }
         if (response.invoiceInfoList) {
-            var invoiceTable = new EsfTable(response.invoiceInfoList.invoiceInfo, pdfButton, messageBox);
-            var invoiceTableElement = invoiceTable.getTable([
-                'regNumber',
-                'sellerId',
-                'sellerName',
-                'type',
-                'status',
-                'currency',
-                'totalWithTax'
-            ]);
+            invoiceTable.invoiceInfoList = response.invoiceInfoList.invoiceInfo;
+            var invoiceTableElement = invoiceTable.getTable();
+            while (tablePlaceholder.firstChild) {
+                tablePlaceholder.removeChild(tablePlaceholder.firstChild);
+            }
             tablePlaceholder.appendChild(invoiceTableElement);
         } else {
             tablePlaceholder.textContent = 'No invoice found';   
@@ -250,3 +246,30 @@ function logOut(){
     document.cookie = 'userCompany=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     location.href = "/";
 }
+
+//save column selection
+function saveSettingsClick() {  
+    var selectColumnCheckboxes = document.getElementsByName('select_columns');
+    var columnsArray = [];
+    for (var i = 0; i < selectColumnCheckboxes.length; i++) {
+         if (selectColumnCheckboxes[i].checked) {
+             columnsArray.push(selectColumnCheckboxes[i].value);
+         }
+    }
+    invoiceTable.selectedColumns = columnsArray;
+    while (tablePlaceholder.firstChild) {
+        tablePlaceholder.removeChild(tablePlaceholder.firstChild);
+    }
+    if (invoiceTable.invoiceInfoList) {   
+        tablePlaceholder.appendChild(invoiceTable.getTable());
+    }
+    
+}
+
+document.getElementById('settings-button').addEventListener('click', function() {
+    while (tablePlaceholder.firstChild) {
+        tablePlaceholder.removeChild(tablePlaceholder.firstChild);
+    }
+    tablePlaceholder.appendChild(invoiceTable.getSettingsPanel());
+    document.getElementById('save-settings-button').addEventListener('click', saveSettingsClick);
+});

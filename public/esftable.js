@@ -1,10 +1,19 @@
 (function(global) {
     
-    var EsfTable = function(invoiceInfoList, pdfButton, messageBox) {
+    var EsfTable = function(pdfButton, messageBox) {
         var self = this;
-        self.invoiceInfoList = invoiceInfoList;
+        self.invoiceInfoList = null;
         self.pdfButton = pdfButton;
         self.messageBox = messageBox;
+        self.selectedColumns = [
+            'regNumber',
+            'sellerId',
+            'sellerName',
+            'type',
+            'status',
+            'currency',
+            'totalWithTax'
+        ];
     }
     
     var updateSelectedCount = function(pdfButton, messageBox) {
@@ -31,8 +40,9 @@
     };
     
     EsfTable.prototype = {
-        getTable: function(selectedColumns) {
+        getTable: function() {
             var self = this;
+            var selectedColumns = self.selectedColumns;
             var tbl = document.createElement('table');
             tbl.className = 'table table-hover table-condensed';
 
@@ -88,6 +98,38 @@
             tbl.appendChild(thead);
             tbl.appendChild(tbdy);
             return tbl;
+        },
+        getSettingsPanel: function() {
+            var self = this;
+            var settingsPanel = document.createElement('div');
+            var heading = document.createElement('h3');
+            heading.textContent = 'Select columns';
+            settingsPanel.appendChild(heading);
+            var saveButton = document.createElement('button');
+            saveButton.type = 'button';
+            saveButton.className = 'btn  btn-primary';
+            saveButton.id = 'save-settings-button';
+            saveButton.textContent = 'Save Changes';
+            
+            for (var column in columns) {
+                var chkboxDiv = document.createElement('div');
+                chkboxDiv.className = 'checkbox';
+                var chkboxLabel = document.createElement('label');
+                var chkbox = document.createElement('input');
+                chkbox.type = 'checkbox';
+                chkbox.name = 'select_columns';
+                chkbox.value = column;
+                if (self.selectedColumns.indexOf(column) !== -1) {
+                    chkbox.checked = true;   
+                }
+                chkboxLabel.appendChild(chkbox);
+                var text = document.createTextNode(columns[column].header);
+                chkboxLabel.appendChild(text);
+                chkboxDiv.appendChild(chkboxLabel);
+                settingsPanel.appendChild(chkboxDiv);
+            }
+            settingsPanel.appendChild(saveButton);
+            return settingsPanel;
         }
     };
     
@@ -112,6 +154,18 @@
             header: 'Seller name',
             getValue: function (invL){
                 return invL.invoice.sellers.seller[0].name;
+            }
+        },
+        customerId: {
+            header: 'Customer ID',
+            getValue: function (invL){
+                return invL.invoice.customers.customer[0].tin;
+            }
+        },
+        customerName: {
+            header: 'Customer name',
+            getValue: function (invL){
+                return invL.invoice.customers.customer[0].name;
             }
         },
         type: {
