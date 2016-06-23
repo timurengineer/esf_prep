@@ -1,3 +1,4 @@
+(function() {
 "use strict";
 var errorBox = document.getElementById('errorbox');
 var usernameInput = document.getElementById('username-input');
@@ -65,7 +66,7 @@ function waitingForServer(on) {
 }
 
 //provide certificate and get user ID, if certificate is valid
-document.getElementById("certificate-input").addEventListener('change', function(evt) {
+document.getElementById('certificate-input').addEventListener('change', function(evt) {
     errorBox.style.display = 'none';
     for (var i = companyInput.options.length; i-->0 ;) {
         companyInput.options[i] = null;
@@ -217,6 +218,7 @@ function queryInvoice() {
         }
     });
 }
+document.getElementById('search_button').addEventListener('click', queryInvoice);
 
 function getPdf(){
     
@@ -242,12 +244,14 @@ function getPdf(){
         }
     });
 }
+document.getElementById('pdf_button').addEventListener('click', getPdf);
 
 function logOut(){
     document.cookie = 'sessionId=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     document.cookie = 'userCompany=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     location.href = "/";
 }
+document.getElementById('logout_button').addEventListener('click', logOut);
 
 //save column selection
 function saveSettingsClick() {  
@@ -276,3 +280,4 @@ document.getElementById('settings-button').addEventListener('click', function() 
     tablePlaceholder.appendChild(invoiceTable.getSettingsPanel());
     document.getElementById('save-settings-button').addEventListener('click', saveSettingsClick);
 });
+}());

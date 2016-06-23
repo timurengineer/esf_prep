@@ -13,7 +13,7 @@
         <nav class="navbar navbar-default navbar-fixed-top">
             <div class="container-fluid">
                 <a href="/" class="navbar-brand">ESF</a>
-                <button type="button" class="btn btn-primary navbar-btn" onclick="logOut()" id="logout_button">Log out</button>
+                <button type="button" class="btn btn-primary navbar-btn" id="logout_button">Log out</button>
                 <span class="navbar-text hidden-xs" id="user_company"></span>
             </div>
         </nav>
@@ -82,13 +82,13 @@
                         </label>
                     </div>
                 </form>
-                <button type="button" class="btn btn-primary" id="search_button" onclick="queryInvoice()">Search</button>
+                <button type="button" class="btn btn-primary" id="search_button">Search</button>
             </div>
             <div id="content">
                 <div class="navbar">
                     <div class="container-fluid" id="buttons">
                         <ul class="nav navbar-nav">
-                            <li><button type="button" class="btn btn-primary navbar-btn" id="pdf_button" onclick="getPdf()" disabled>Export to PDF</button></li>
+                            <li><button type="button" class="btn btn-primary navbar-btn" id="pdf_button" disabled>Export to PDF</button></li>
                             <li><p class="navbar-text" id="messages"></p</li>
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
