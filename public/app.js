@@ -13,7 +13,7 @@ var loginHelper = new EsfLoginHelper();
 var apiHelper = new EsfApiHelper();
 var invoiceTable = new EsfTable(pdfButton, messageBox);
 
-// switch to main view if sessionId cookie exist
+// on page load switch to main view if sessionId cookie exist
 if (getCookie('sessionId')) {
     document.getElementById('user_company').textContent = getCookie('userCompany');
     switchToView('main');
@@ -220,8 +220,7 @@ function queryInvoice() {
 }
 document.getElementById('search_button').addEventListener('click', queryInvoice);
 
-function getPdf(){
-    
+function getPdf(){   
     //disable buttons and show loading message
     waitingForServer(true);
     
